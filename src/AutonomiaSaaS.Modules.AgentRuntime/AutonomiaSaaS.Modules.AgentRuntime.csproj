@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>AutonomiaSaaS.Modules.AgentRuntime</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Intencionalmente sem dependência de OrchardCore.* aqui.
+         Este módulo é uma class library pura: só precisa de HttpClient,
+         configuração e System.Text.Json, todos já no SDK do .NET.
+         O empacotamento como Orchard Core Feature (se algum dia for necessário
+         registrar isso como módulo habilitável por tenant) fica numa camada
+         fina separada, não aqui. -->
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
+  </ItemGroup>
+
+</Project>

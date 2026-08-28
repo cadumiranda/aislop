@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>AutonomiaSaaS.Modules.BusinessCore</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Versão do Orchard Core não fixada aqui de propósito — usar a mesma
+         versão do host AutonomiaSaaS.Web (gerenciada centralmente, idealmente
+         via Directory.Packages.props quando o host existir). Ajuste a versão
+         abaixo para a que estiver no seu AutonomiaSaaS.Web.csproj. -->
+    <PackageReference Include="OrchardCore.ContentManagement" Version="2.1.0" />
+    <PackageReference Include="OrchardCore.ContentManagement.Abstractions" Version="2.1.0" />
+    <PackageReference Include="OrchardCore.Data.Abstractions" Version="2.1.0" />
+    <PackageReference Include="YesSql.Abstractions" Version="5.1.4" />
+  </ItemGroup>
+
+  <!-- BusinessCore não referencia AgentRuntime nem nenhum outro módulo de
+       agente: Content Types e a máquina de estados da tarefa não precisam
+       saber como uma chamada de modelo é feita. Isso mantém a dependência
+       de mão única correta: AcquisitionAgent (futuro) vai depender de
+       BusinessCore e de AgentRuntime, nunca o contrário. -->
+
+</Project>

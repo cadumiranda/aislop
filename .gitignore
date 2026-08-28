@@ -1,0 +1,12 @@
+## Ignore Visual Studio / .NET build artifacts
+[Bb]in/
+[Oo]bj/
+.vs/
+.idea/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
