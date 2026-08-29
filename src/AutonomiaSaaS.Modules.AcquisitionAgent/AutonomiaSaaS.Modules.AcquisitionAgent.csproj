@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>AutonomiaSaaS.Modules.AcquisitionAgent</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OrchardCore.Modules.Abstractions" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Único módulo que depende dos três anteriores ao mesmo tempo — é
+         exatamente por isso que ele foi implementado por último, seguindo a
+         ordem de menor para maior dependência que vimos usando desde o
+         início (AgentRuntime -> BusinessCore -> RiskGate -> AcquisitionAgent). -->
+    <ProjectReference Include="..\AutonomiaSaaS.Modules.AgentRuntime\AutonomiaSaaS.Modules.AgentRuntime.csproj" />
+    <ProjectReference Include="..\AutonomiaSaaS.Modules.BusinessCore\AutonomiaSaaS.Modules.BusinessCore.csproj" />
+    <ProjectReference Include="..\AutonomiaSaaS.Modules.RiskGate\AutonomiaSaaS.Modules.RiskGate.csproj" />
+  </ItemGroup>
+
+</Project>
