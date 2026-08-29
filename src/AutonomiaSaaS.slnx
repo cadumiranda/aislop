@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="AutonomiaSaaS.Modules.AcquisitionAgent/AutonomiaSaaS.Modules.AcquisitionAgent.csproj" />
+  <Project Path="AutonomiaSaaS.Modules.AgentRuntime/AutonomiaSaaS.Modules.AgentRuntime.csproj" />
+  <Project Path="AutonomiaSaaS.Modules.BusinessCore/AutonomiaSaaS.Modules.BusinessCore.csproj" />
+  <Project Path="AutonomiaSaaS.Modules.RiskGate/AutonomiaSaaS.Modules.RiskGate.csproj" />
+  <Project Path="AutonomiaSaaS.Tests/AutonomiaSaaS.Tests.csproj" />
+  <Project Path="AutonomiaSaaS.Web/AutonomiaSaaS.Web.csproj" />
+</Solution>

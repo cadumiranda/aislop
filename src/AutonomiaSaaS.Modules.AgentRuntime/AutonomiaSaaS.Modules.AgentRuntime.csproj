@@ -8,14 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Intencionalmente sem dependência de OrchardCore.* aqui.
-         Este módulo é uma class library pura: só precisa de HttpClient,
-         configuração e System.Text.Json, todos já no SDK do .NET.
-         O empacotamento como Orchard Core Feature (se algum dia for necessário
-         registrar isso como módulo habilitável por tenant) fica numa camada
-         fina separada, não aqui. -->
+    <!-- Atualização: este módulo GANHOU Manifest.cs/Startup.cs (ver essa
+         história no README) — a "class library pura" continua sendo a
+         lógica de domínio, mas o módulo como um todo agora depende de
+         OrchardCore.Modules.Abstractions para ser descoberto e ter
+         ConfigureServices chamado pelo host. -->
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
+    <PackageReference Include="OrchardCore.Module.Targets" Version="2.1.0" />
   </ItemGroup>
 
 </Project>

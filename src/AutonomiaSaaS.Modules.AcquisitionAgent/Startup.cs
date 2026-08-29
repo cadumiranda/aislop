@@ -1,4 +1,5 @@
 using AutonomiaSaaS.Modules.AcquisitionAgent.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
 
@@ -6,17 +7,32 @@ namespace AutonomiaSaaS.Modules.AcquisitionAgent;
 
 public sealed class Startup : StartupBase
 {
+    private readonly IConfiguration _configuration;
+
+    public Startup(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IAcquisitionAgentOrchestrator, AcquisitionAgentOrchestrator>();
 
-        services.AddHttpClient<IDeploymentClient, VercelDeploymentClient>(httpClient =>
+        var vercelToken = _configuration["Vercel:ApiToken"];
+        var useFake = _configuration.GetValue<bool>("Vercel:UseFake", defaultValue: true);
+
+        if (!useFake && !string.IsNullOrEmpty(vercelToken))
         {
-            // Base URL e token de autenticação da Vercel devem vir de
-            // configuração/Key Vault (mesmo princípio do módulo AgentRuntime),
-            // nunca hardcoded. Deixado como placeholder — ver aviso em
-            // VercelDeploymentClient sobre a API não ter sido validada.
-            httpClient.BaseAddress = new Uri("https://api.vercel.com");
-        });
+            services.AddHttpClient<IDeploymentClient, VercelDeploymentClient>(httpClient =>
+            {
+                httpClient.BaseAddress = new Uri("https://api.vercel.com");
+                httpClient.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", vercelToken);
+            });
+        }
+        else
+        {
+            services.AddSingleton<IDeploymentClient, FakeDeploymentClient>();
+        }
     }
 }

@@ -1,5 +1,4 @@
 using AutonomiaSaaS.Modules.BusinessCore.Indexes;
-using AutonomiaSaaS.Modules.BusinessCore.Parts;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -16,23 +15,23 @@ public sealed class Migrations : DataMigration
     }
 
     public async Task<int> CreateAsync()
-    { 
-        await _contentDefinitionManager.AlterPartDefinitionAsync(nameof(BusinessContextPart), part => part
+    {
+        await _contentDefinitionManager.AlterPartDefinitionAsync("BusinessContextPart", part => part
             .Attachable(false) // parte de um único Content Type, não anexável livremente
             .WithDescription("Contexto do negócio de um tenant: metas, tetos de gasto, tom de marca."));
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("BusinessContext", type => type
-            .WithPart(nameof(BusinessContextPart))
+            .WithPart("BusinessContextPart")
             .Creatable(false)   // criado uma vez por tenant via processo de onboarding, não pelo editor de conteúdo
             .Listable(false)
             .Draftable(false)); // não faz sentido ter rascunho de contexto de negócio
 
-        await _contentDefinitionManager.AlterPartDefinitionAsync(nameof(AgentTaskPart), part => part
+        await _contentDefinitionManager.AlterPartDefinitionAsync("AgentTaskPart", part => part
             .Attachable(false)
             .WithDescription("Uma tarefa proposta por um agente, com risco, status e plano de rollback."));
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("AgentTask", type => type
-            .WithPart(nameof(AgentTaskPart))
+            .WithPart("AgentTaskPart")
             .Creatable(false)   // tarefas são criadas via AgentTaskStore, não pelo editor de conteúdo
             .Listable(true)     // aparece no painel de aprovação
             .Draftable(false)); // uma AgentTask não tem estado de rascunho, só os estados da seção 6
@@ -49,4 +48,4 @@ public sealed class Migrations : DataMigration
 
         return 1;
     }
-} 
+}

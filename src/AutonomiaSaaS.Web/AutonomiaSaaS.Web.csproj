@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>autonomia-saas-web</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Pacote "guarda-chuva" oficial usado pelos templates de CMS do
+         Orchard Core — traz Admin UI, Content Management, Users/Roles,
+         Data (SQLite/SQL Server/Postgres), Setup, Themes, etc. Mais pesado
+         do que só o que a Fase 1 usa, mas é a escolha "caminho batido" para
+         não reinventar a composição mínima do host na mão. Se algum dia
+         fizer sentido reduzir a superfície, dá pra trocar por um conjunto
+         mais enxuto de pacotes OrchardCore.* individuais depois. -->
+    <PackageReference Include="OrchardCore.Application.Cms.Targets" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AutonomiaSaaS.Modules.AgentRuntime\AutonomiaSaaS.Modules.AgentRuntime.csproj" />
+    <ProjectReference Include="..\AutonomiaSaaS.Modules.BusinessCore\AutonomiaSaaS.Modules.BusinessCore.csproj" />
+    <ProjectReference Include="..\AutonomiaSaaS.Modules.RiskGate\AutonomiaSaaS.Modules.RiskGate.csproj" />
+    <ProjectReference Include="..\AutonomiaSaaS.Modules.AcquisitionAgent\AutonomiaSaaS.Modules.AcquisitionAgent.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -263,10 +263,169 @@ não-determinístico, ainda que só por um instante de diferença).
 
 ## Próximo módulo sugerido
 
-`AcquisitionAgent` — agora existem as três peças que ele precisa consumir:
-`IAgentRuntime` (chamar o modelo), `ITaskRiskGateway` (propor a ação com risco
-já resolvido) e `IAgentTaskStore`/`AgentTaskStateMachine` (acompanhar o ciclo
-de vida da tarefa). É o módulo que fecha o loop completo da Fase 1 descrito
-na seção 5 da especificação técnica.
-#   a i s l o p  
- 
+`AcquisitionAgent` — feito. Ver seção abaixo. Fecha o loop completo da Fase 1.
+
+---
+
+# AutonomiaSaaS.Modules.AcquisitionAgent
+
+Quarto e último módulo da Fase 1 (roadmap, seção 11 do documento de
+arquitetura). É o único que depende dos três anteriores ao mesmo tempo —
+por isso foi implementado por último, na ordem de menor para maior
+dependência que seguimos desde o início.
+
+## Decisão mais importante deste módulo
+
+A seção 5 da especificação técnica original propunha modelar os 8 passos da
+Fase 1 como um **Workflow Type** do `OrchardCore.Workflows`, com atividades
+customizadas (`TaskActivity`). Depois de já ter corrigido 3 erros reais de
+API do Orchard Core nos módulos anteriores, decidi **não** escrever a
+integração com o motor de Workflows agora — a API de suspender/retomar
+execução (`IWorkflowExecutionContext`, `IWorkflowManager.ResumeWorkflowAsync`)
+é a superfície que eu tenho menos confiança de acertar de memória, e é
+justamente a parte mais cara de errar silenciosamente (uma tarefa que deveria
+ficar suspensa aguardando aprovação, mas não fica de verdade).
+
+Em vez disso, `AcquisitionAgentOrchestrator` implementa a sequência
+determinística inteira como métodos C# comuns, testável sem nenhuma
+dependência de Workflows:
+
+- `GenerateLandingPageAsync` — passos 1 a 6: recebe a descrição do negócio,
+  gera a landing page (`IAgentRuntime`), propõe a ação (`ITaskRiskGateway`,
+  baixo risco, auto-executa), faz deploy em staging, verifica saúde, e propõe
+  a promoção para produção (sempre alto risco, fica aguardando aprovação).
+- `PromoteToProductionAsync` — passos 7 e 8: chamado depois que um humano
+  aprova a tarefa no painel (fora deste módulo). Promove de fato, ou reverte
+  (`rollback_action`) se a promoção falhar ou o deploy ficar `Unhealthy`.
+
+**O que fica pendente:** ligar esses dois métodos a atividades visuais de
+Workflow (para o `IWorkflowManager` suspender de verdade a execução entre
+`GenerateLandingPageAsync` e `PromoteToProductionAsync`, em vez de dois
+métodos públicos chamados separadamente por, por exemplo, um controller do
+Admin) é uma camada fina de próximo passo — a lógica que ela vai chamar já
+está pronta e testada.
+
+## Estrutura
+
+```
+src/AutonomiaSaaS.Modules.AcquisitionAgent/
+├── Domain/
+│   ├── LandingPagePlan.cs / DeploymentResult.cs
+│   └── GenerateLandingPageResult.cs / PromoteToProductionResult.cs
+├── Services/
+│   ├── IDeploymentClient.cs              # Abstrai o provedor de deploy
+│   ├── VercelDeploymentClient.cs         # ⚠️ Ver aviso abaixo
+│   └── AcquisitionAgentOrchestrator.cs   # A peça mais importante do módulo
+├── Startup.cs
+└── Manifest.cs
+
+tests/AutonomiaSaaS.Modules.AcquisitionAgent.Tests/
+├── AcquisitionAgentOrchestratorTests.cs   # 9 testes, cobrindo os dois
+│                                           # caminhos de falha e o caminho feliz
+└── Fakes: FakeAgentRuntime, FakeTaskRiskGateway, FakeAgentTaskStore, FakeDeploymentClient
+```
+
+## Garantias que os testes travam
+
+- **Deploy em produção nunca é proposto se staging não ficou saudável**
+  (`GenerateLandingPageAsync_StagingNaoSaudavel_ReverteTarefaENaoProdePromocao`)
+  — é a implementação de "deploys sempre em staging antes de produção" da
+  seção 5 do documento de arquitetura.
+- **A tarefa de produção nunca sai de `AguardandoAprovacao` sozinha** —
+  `GenerateLandingPageAsync` propõe a ação mas nunca a promove; só
+  `PromoteToProductionAsync` faz isso, e só depois de checar que o Status já
+  é `Aprovada` (defesa em profundidade, mesmo que quem chame tenha esquecido
+  de checar antes).
+- **Os dois caminhos de falha na promoção (exceção lançada vs. resultado
+  retornado como `Unhealthy`) levam ao mesmo desfecho**: chamar
+  `RollbackToPreviousAsync` e marcar a tarefa como `Revertida` — nenhum dos
+  dois deveria deixar produção num estado indefinido nem a tarefa "presa" em
+  `Executando`.
+
+## ⚠️ `VercelDeploymentClient`: não confie nisso sem checar a documentação da Vercel
+
+Diferente do resto do módulo, esta classe não foi escrita com o mesmo nível
+de confiança — não confirmei os endpoints reais da Vercel Deployments API
+(formato de payload, nomes de campo, endpoint exato de promoção). Os testes
+do orquestrador não dependem dela (usam `IDeploymentClient` fake), então isso
+não bloqueia validar o resto do módulo, mas trate esta classe como esqueleto,
+não como integração pronta para produção.
+
+## Resumindo os quatro módulos da Fase 1
+
+| Módulo | Depende de | Testes | Risco de compilação |
+|---|---|---|---|
+| `AgentRuntime` | nenhum (class library pura) | 12 | Baixo |
+| `BusinessCore` | Orchard Core | 15 (só a máquina de estados) | Médio-alto (3 erros já corrigidos) |
+| `RiskGate` | `BusinessCore` | 25 | Baixo (pouca API nova do Orchard Core) |
+| `AcquisitionAgent` | os três anteriores | 9 | Baixo no orquestrador; alto se/quando ligar a Workflows de verdade |
+
+## Próximo passo sugerido
+
+`AutonomiaSaaS.Web` — feito. Ver seção final abaixo.
+
+---
+
+# AutonomiaSaaS.Web (host)
+
+O executável de verdade. Referencia os quatro módulos; o Orchard Core os
+descobre automaticamente (via `[assembly: Module]`) só por estarem
+referenciados no `.csproj` — não precisa registrar nada manualmente aqui.
+
+## 🐛 Bug real encontrado só ao montar o host
+
+`AgentRuntime` **não tinha** `Manifest.cs`/`Startup.cs` como os outros três
+módulos — só os métodos de extensão `AddAgentRuntime`/`AddAgentRuntimeInMemory`,
+que precisam ser chamados por alguém. `AcquisitionAgent.Startup` registra
+`IAcquisitionAgentOrchestrator` (que depende de `IAgentRuntime` no
+construtor) mas nunca chamava `AddAgentRuntime` — ou seja, o container de DI
+ia falhar ao tentar resolver `IAcquisitionAgentOrchestrator` em runtime, um
+erro que só aparece ao rodar de verdade, não ao compilar cada módulo
+isoladamente. Corrigido: `AgentRuntime` agora tem `Manifest.cs` e `Startup.cs`
+próprios, chamando `AddAgentRuntimeInMemory` (a versão com `ICostLogger` em
+memória — a persistente ainda não existe, ver aviso no módulo `AgentRuntime`).
+
+Isso é exatamente o tipo de erro que só aparece quando as peças são montadas
+juntas — nenhum dos quatro módulos isoladamente "sabia" que faltava essa
+peça.
+
+## Como rodar localmente
+
+```bash
+cd AutonomiaSaaS
+dotnet restore
+dotnet user-secrets set "AgentRuntime:ApiKey" "sk-ant-sua-chave-aqui" --project src/AutonomiaSaaS.Web
+dotnet run --project src/AutonomiaSaaS.Web
+```
+
+Na primeira execução, o Orchard Core abre o assistente de setup no navegador
+(`https://localhost:7139`). Escolha SQLite como banco para rodar local sem
+precisar de infraestrutura externa — isso grava a configuração do tenant em
+`src/AutonomiaSaaS.Web/App_Data/` (já no `.gitignore`, nunca comitar).
+
+## O que ainda falta para a Fase 1 funcionar de ponta a ponta
+
+Mesmo com o host de pé, ainda faltam duas coisas que a especificação técnica
+menciona mas nenhum dos quatro módulos implementa ainda:
+
+1. **Painel de aprovação (Admin UI)** — seção 8 da especificação técnica.
+   Hoje `PromoteToProductionAsync` existe no `AcquisitionAgentOrchestrator`,
+   mas nada no sistema chama `AgentTaskStore.TransitionAsync(..., Aprovada)`
+   a partir de um clique real de um humano — não existe página nem endpoint
+   ainda.
+2. **`IBackgroundTask` de expiração de aprovação** — seção 5 da especificação
+   técnica. `AgentTaskStore.GetExpiredApprovalsAsync` já existe e funciona,
+   mas nada chama isso em ciclo ainda.
+3. **Ligação com `OrchardCore.Workflows` de verdade** — já registrado como
+   pendência no README do `AcquisitionAgent`.
+
+## ⚠️ Maior incerteza deste arquivo: `OrchardCore.Application.Cms.Targets`
+
+Usei esse nome de pacote e o padrão mínimo de `Program.cs`
+(`AddOrchardCms()` / `UseOrchardCore()`) com razoável confiança — é o padrão
+documentado oficialmente pelo Orchard Core há várias versões — mas não tenho
+como confirmar a versão exata do pacote (`2.1.0`, o mesmo placeholder usado
+nos módulos) nem se `OrchardCore.Application.Cms.Targets` continua sendo o
+nome atual do pacote "tudo incluso". Se o `dotnet restore` falhar em
+encontrar esse pacote, esse é o primeiro lugar a checar na documentação
+oficial atual do Orchard Core.

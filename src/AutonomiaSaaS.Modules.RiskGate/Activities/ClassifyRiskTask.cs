@@ -13,8 +13,9 @@ namespace AutonomiaSaaS.Modules.RiskGate.Activities
     /// se a tarefa proposta pela IA representa risco Baixo ou Alto para o negócio.
     /// </summary>
     [Activity(
-        Category = "AutonomiaSaaS", 
-        Description = "Avalia o risco de uma tarefa proposta com base no tipo de ação e na magnitude financeira contra os limites do Tenant.", 
+        "ClassifyRiskTask",
+        "AutonomiaSaaS", 
+        "Avalia o risco de uma tarefa proposta com base no tipo de ação e na magnitude financeira contra os limites do Tenant.", 
         DisplayName = "Classificar Risco da Tarefa"
     )]
     public class ClassifyRiskTask : CodeActivity<RiskClassificationResult>
