@@ -268,3 +268,5 @@ não-determinístico, ainda que só por um instante de diferença).
 já resolvido) e `IAgentTaskStore`/`AgentTaskStateMachine` (acompanhar o ciclo
 de vida da tarefa). É o módulo que fecha o loop completo da Fase 1 descrito
 na seção 5 da especificação técnica.
+#   a i s l o p  
+ 
