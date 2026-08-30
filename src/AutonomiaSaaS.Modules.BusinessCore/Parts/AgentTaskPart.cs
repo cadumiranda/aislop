@@ -58,4 +58,18 @@ public sealed class AgentTaskPart : ContentPart
     /// (ver especificação técnica, seção 5) que expira aprovações vencidas.
     /// </summary>
     public DateTimeOffset? ApprovalTimeout { get; set; }
+
+    /// <summary>
+    /// Bag genérico de dados extras específicos do agente que propôs a
+    /// tarefa, serializado como JSON. Ex: para deploy em produção do
+    /// AcquisitionAgent, guarda {"stagingDeploymentId": "..."} — dado que só
+    /// o próprio agente sabe interpretar. BusinessCore nunca lê o conteúdo
+    /// deste campo, só carrega — é isso que evita BusinessCore precisar
+    /// conhecer o formato de payload de cada agente presente ou futuro.
+    /// Como ContentPart é serializado como JSON dentro do ContentItem por
+    /// padrão no Orchard Core, adicionar esta propriedade não exige nenhuma
+    /// migração de coluna de banco — só campos indexados (ver
+    /// AgentTaskPartIndex) precisam disso.
+    /// </summary>
+    public string PayloadJson { get; set; } = "{}";
 }

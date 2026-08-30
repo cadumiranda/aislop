@@ -12,7 +12,8 @@ public sealed record ProposeActionRequest(
     string RollbackAction,
     decimal? SpendAmount = null,
     string? SpendCapKey = null,
-    TimeSpan? ApprovalTimeout = null
+    TimeSpan? ApprovalTimeout = null,
+    string PayloadJson = "{}"
 );
 
 public sealed record ProposeActionResult(
@@ -69,7 +70,8 @@ public sealed class TaskRiskGateway : ITaskRiskGateway
                 Action: request.ActionDescription,
                 RiskLevel: classification.RiskLevel,
                 EstimatedCostTokens: request.EstimatedCostTokens,
-                RollbackAction: request.RollbackAction),
+                RollbackAction: request.RollbackAction,
+                PayloadJson: request.PayloadJson),
             cancellationToken).ConfigureAwait(false);
 
         AgentTaskStatus finalStatus;

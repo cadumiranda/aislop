@@ -1,14 +1,28 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>AutonomiaSaaS.Modules.RiskGate</RootNamespace>
+    <!-- Necessário para um módulo com Controllers MVC além de Razor Views
+         "soltas" — sem isso, o roteamento de Controllers deste módulo não
+         é descoberto pelo host. Padrão usual de módulo Orchard Core com
+         Admin UI. -->
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- ⚠️ MAIOR RISCO DE COMPILAÇÃO DESTE MÓDULO: OrchardCore.Module.Targets
+         é o pacote que traz o MSBuild targets responsável por empacotar
+         Controllers/Views/Manifest.cs como um módulo Orchard Core de verdade
+         (em vez de só uma class library com um assembly attribute). Escrevi
+         isso com base no padrão usual de projeto de módulo do Orchard Core,
+         mas não tenho como confirmar a versão exata nem se o nome do pacote
+         mudou em versões recentes sem acesso ao NuGet. -->
     <PackageReference Include="OrchardCore.Module.Targets" Version="2.1.0" />
+    <PackageReference Include="OrchardCore.Admin" Version="2.1.0" />
+    <PackageReference Include="OrchardCore.Navigation" Version="2.1.0" />
     <PackageReference Include="Elsa.Workflows.Core" Version="3.3.0" />
   </ItemGroup>
 

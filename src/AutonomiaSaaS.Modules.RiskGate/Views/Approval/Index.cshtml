@@ -1,0 +1,67 @@
+@model AutonomiaSaaS.Modules.RiskGate.ViewModels.ApprovalIndexViewModel
+@{
+    // Convenção do Orchard Core: definir o título da página do Admin.
+    ViewData["Title"] = "Aprovações pendentes";
+}
+
+<h1>Aprovações pendentes</h1>
+
+@if (TempData["SuccessMessage"] is string successMessage)
+{
+    <div class="alert alert-success">@successMessage</div>
+}
+@if (TempData["ErrorMessage"] is string errorMessage)
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+@if (!Model.PendingApprovals.Any())
+{
+    <p>Nenhuma ação de alto risco aguardando aprovação no momento.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Agente</th>
+                <th>Ação proposta</th>
+                <th>Custo estimado (tokens)</th>
+                <th>Plano de rollback</th>
+                <th>Expira em</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.PendingApprovals)
+            {
+                <tr>
+                    <td>@item.AgentName</td>
+                    <td>@item.Action</td>
+                    <td>@item.EstimatedCostTokens</td>
+                    <td>@item.RollbackAction</td>
+                    <td>
+                        @if (item.ApprovalTimeout is not null)
+                        {
+                            @item.ApprovalTimeout.Value.ToString("g")
+                        }
+                        else
+                        {
+                            <span class="text-muted">—</span>
+                        }
+                    </td>
+                    <td>
+                        <form asp-action="Approve" asp-route-taskId="@item.TaskId" method="post" style="display:inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-success">Aprovar</button>
+                        </form>
+                        <form asp-action="Reject" asp-route-taskId="@item.TaskId" method="post" style="display:inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-danger">Rejeitar</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

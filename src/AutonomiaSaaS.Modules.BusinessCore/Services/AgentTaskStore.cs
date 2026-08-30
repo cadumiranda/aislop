@@ -29,6 +29,7 @@ public sealed class AgentTaskStore : IAgentTaskStore
             part.RiskLevel = request.RiskLevel;
             part.EstimatedCostTokens = request.EstimatedCostTokens;
             part.RollbackAction = request.RollbackAction;
+            part.PayloadJson = request.PayloadJson;
             part.Status = AgentTaskStatus.Proposta; // toda tarefa nasce em Proposta, sem exceção
         });
 

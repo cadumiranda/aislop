@@ -123,13 +123,22 @@ public sealed class AcquisitionAgentOrchestrator : IAcquisitionAgentOrchestrator
         // alto risco por regra fixa (ActionRiskCatalog.HighRiskActions.DeployProducao),
         // mesmo a geração em si tendo sido baixo risco. Esta tarefa sai como
         // AguardandoAprovacao dentro do próprio gateway.
+        //
+        // stagingDeploymentId vai no PayloadJson porque é o único jeito de
+        // PromoteToProductionAsync (chamado bem depois, a partir de um
+        // clique no painel de aprovação) saber qual deployment de staging
+        // promover — nenhum outro campo de AgentTaskPart carrega esse dado.
+        var payloadJson = System.Text.Json.JsonSerializer.Serialize(
+            new { stagingDeploymentId = stagingDeployment.DeploymentId });
+
         var productionProposal = await _taskRiskGateway.ProposeActionAsync(
             new ProposeActionRequest(
                 AgentName: AgentName,
                 ActionKey: ActionRiskCatalog.HighRiskActions.DeployProducao,
                 ActionDescription: $"Promover para produção: {plan.Headline} ({stagingDeployment.Url})",
                 EstimatedCostTokens: 0,
-                RollbackAction: "redeploy_commit_anterior"),
+                RollbackAction: "redeploy_commit_anterior",
+                PayloadJson: payloadJson),
             cancellationToken).ConfigureAwait(false);
 
         return new GenerateLandingPageResult(

@@ -1,0 +1,45 @@
+@model AutonomiaSaaS.Modules.AcquisitionAgent.ViewModels.GenerateLandingPageResultViewModel
+@{
+    ViewData["Title"] = "Landing page gerada";
+}
+
+@if (Model.Failed)
+{
+    <div class="alert alert-danger">
+        <h4>Não deu certo desta vez</h4>
+        <p>
+            A landing page foi gerada, mas o deploy em ambiente de teste não
+            ficou saudável, então nada foi promovido. Tente gerar novamente —
+            se o problema persistir, isso pode indicar um problema no
+            provedor de deploy, não no conteúdo gerado.
+        </p>
+    </div>
+}
+else
+{
+    <div class="alert alert-success">
+        <h4>Landing page gerada com sucesso</h4>
+        <p>
+            Confira o resultado em ambiente de teste antes de aprovar a
+            publicação definitiva:
+        </p>
+        <p>
+            <a href="@Model.StagingUrl" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary">
+                Ver landing page (staging)
+            </a>
+        </p>
+    </div>
+
+    <div class="alert alert-info">
+        <h4>Aguardando sua aprovação para publicar</h4>
+        <p>
+            Publicar em produção é uma ação de alto risco por padrão — precisa
+            da sua aprovação explícita antes de ir ao ar de verdade. Peça a um
+            administrador da plataforma para acessar
+            <strong>Admin → Autonomia SaaS → Aprovações</strong> e revisar a
+            tarefa <code>@Model.ProductionApprovalTaskId</code>.
+        </p>
+    </div>
+}
+
+<a asp-action="Index" class="btn btn-link">Gerar outra landing page</a>

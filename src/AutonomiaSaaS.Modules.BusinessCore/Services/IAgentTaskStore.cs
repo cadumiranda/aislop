@@ -8,7 +8,8 @@ public sealed record CreateAgentTaskRequest(
     string Action,
     RiskLevel RiskLevel,
     long EstimatedCostTokens,
-    string RollbackAction
+    string RollbackAction,
+    string PayloadJson = "{}"
 );
 
 /// <summary>

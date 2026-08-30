@@ -429,3 +429,195 @@ nos módulos) nem se `OrchardCore.Application.Cms.Targets` continua sendo o
 nome atual do pacote "tudo incluso". Se o `dotnet restore` falhar em
 encontrar esse pacote, esse é o primeiro lugar a checar na documentação
 oficial atual do Orchard Core.
+
+---
+
+# Painel de Aprovação (Admin UI) — seção 8 da especificação técnica
+
+Última peça da Fase 1. Vive dentro do módulo `RiskGate` (mesmo lugar proposto
+na especificação técnica original), e é de longe a parte com mais superfície
+nova de API do Orchard Core desta sessão inteira: Controllers MVC, Views
+Razor, menu de Admin (`INavigationProvider`) e permissões
+(`IPermissionProvider`). Depois de já ter corrigido erros reais nos módulos
+anteriores, tratei esta parte com o maior grau de cautela — ver avisos abaixo.
+
+## Dois bugs reais encontrados só ao desenhar esta peça (antes mesmo de compilar)
+
+1. **Faltava o elo entre "aprovar" e "executar de verdade".**
+   `AgentTaskStore.TransitionAsync(taskId, Aprovada)` só muda o `Status` —
+   nada disparava `AcquisitionAgentOrchestrator.PromoteToProductionAsync`
+   depois disso. Resolvido com um padrão de despacho: `IApprovedTaskExecutor`
+   (interface nova em `BusinessCore`) + `ApprovedTaskDispatcher`, que resolve
+   o executor certo pelo `AgentName` da tarefa. Isso existir em `BusinessCore`
+   — não em `RiskGate` nem na própria UI do Admin — é o que evita uma
+   dependência circular: `AcquisitionAgent` já depende de `RiskGate`, então
+   `RiskGate`/Admin UI não podem depender de volta de `AcquisitionAgent`.
+2. **`PromoteToProductionAsync` precisa do `stagingDeploymentId`, mas
+   `AgentTaskPart` não tinha onde guardar isso.** Adicionei `PayloadJson`
+   (bag genérico de dados extras específicos do agente) ao `AgentTaskPart` —
+   e, como parts do Orchard Core são serializadas como JSON dentro do
+   próprio `ContentItem`, isso **não exigiu nenhuma migração de banco nova**,
+   só a propriedade em C#.
+
+## Um terceiro bug, de runtime, pego antes mesmo de rodar
+
+`AcquisitionAgentOrchestrator` grava `PayloadJson` serializando um objeto
+anônimo com a propriedade em **camelCase** (`stagingDeploymentId`).
+`AcquisitionAgentApprovedTaskExecutor` desserializava isso numa classe C#
+com a propriedade em **PascalCase** (`StagingDeploymentId`) sem
+`PropertyNameCaseInsensitive = true` — `System.Text.Json` é case-sensitive
+por padrão, então isso silenciosamente retornaria `StagingDeploymentId`
+vazio, e a promoção pra produção falharia sempre, sem exceção clara
+apontando a causa. Corrigido, e travado com um teste
+(`ExecuteApprovedTaskAsync_PayloadComCamelCase_ExtraiStagingDeploymentIdCorretamente`).
+
+## Estrutura nova
+
+```
+src/AutonomiaSaaS.Modules.RiskGate/
+├── Controllers/ApprovalController.cs   # Index, Approve, Reject
+├── Views/
+│   ├── _ViewImports.cshtml             # Tag Helpers (asp-action, etc.)
+│   └── Approval/Index.cshtml
+├── ViewModels/ApprovalViewModels.cs    # Nunca expor AgentTaskPart na View
+├── AdminMenu.cs                        # INavigationProvider
+└── Permissions.cs                      # IPermissionProvider
+
+src/AutonomiaSaaS.Modules.BusinessCore/
+└── Services/IApprovedTaskExecutor.cs   # Interface + ApprovedTaskDispatcher (novo)
+
+src/AutonomiaSaaS.Modules.AcquisitionAgent/
+└── Services/AcquisitionAgentApprovedTaskExecutor.cs   # Implementação concreta
+
+tests/AutonomiaSaaS.Modules.BusinessCore.Tests/
+└── ApprovedTaskDispatcherTests.cs      # 3 testes
+
+tests/AutonomiaSaaS.Modules.AcquisitionAgent.Tests/
+└── AcquisitionAgentApprovedTaskExecutorTests.cs   # 3 testes, incluindo o bug de casing
+```
+
+## ⚠️ Avisos de risco de compilação, do mais para o menos grave
+
+1. **`.csproj` do `RiskGate` mudou de `Sdk="Microsoft.NET.Sdk"` para
+   `Sdk="Microsoft.NET.Sdk.Razor"`**, com `OrchardCore.Module.Targets` como
+   pacote novo. Esse é o padrão usual de projeto de módulo Orchard Core com
+   Admin UI, mas é a mudança de maior risco desta sessão inteira — não tenho
+   como confirmar sem compilar que o nome do pacote e a versão (`2.1.0`,
+   mesmo placeholder de sempre) estão certos.
+2. **`ApprovalController.MapToViewModel` usa `part.ContentItem.ContentItemId`**
+   para obter o `TaskId` a partir de um `AgentTaskPart`. Tenho boa confiança
+   que `ContentPart` expõe uma propriedade `ContentItem` de volta para o item
+   dono, mas não confirmei o nome exato dela nesta versão do Orchard Core.
+3. **`[Admin]` vem de `OrchardCore.Admin.Abstractions`** e o roteamento por
+   área (`area = "AutonomiaSaaS.Modules.RiskGate"` no `AdminMenu`) assume a
+   convenção de que cada módulo Orchard Core já é automaticamente uma MVC
+   Area nomeada como o próprio módulo — não adicionei um atributo `[Area]`
+   explícito no controller porque, pelo padrão usual do framework, isso não
+   deveria ser necessário, mas não é algo que eu tenha validado por
+   compilação real.
+4. **`IStringLocalizer<T>` e o padrão `S["texto"]`** para textos localizáveis
+   é o padrão idiomático do Orchard Core, mas os textos aqui estão direto em
+   português — funciona para um único idioma sem nenhum arquivo `.po`
+   adicional, só não aproveita a localização de verdade ainda.
+
+## Como testar o fluxo completo depois de compilar
+
+1. Rodar o host, criar um tenant, ativar os módulos.
+2. Chamar `AcquisitionAgentOrchestrator.GenerateLandingPageAsync` (hoje só
+   via código/teste manual — não existe endpoint público ainda para o
+   usuário final disparar isso digitando a descrição do negócio).
+3. Acessar `/Admin` → "Autonomia SaaS" → "Aprovações" e ver a tarefa de
+   `deploy_producao` esperando.
+4. Clicar "Aprovar" e confirmar, no log, que
+   `AcquisitionAgentApprovedTaskExecutor.ExecuteApprovedTaskAsync` foi
+   chamado e a tarefa terminou em `Concluida` (ou `Revertida`, se o
+   `VercelDeploymentClient` falhar — lembrando que essa classe ainda não foi
+   validada contra a API real da Vercel).
+
+## O que ainda falta depois disso
+
+- ~~Endpoint/UI para o usuário final descrever o negócio e disparar
+  `GenerateLandingPageAsync`~~ — feito. Ver seção abaixo.
+- `IBackgroundTask` de expiração de aprovação (usa
+  `GetExpiredApprovalsAsync`, que já existe e funciona, mas nada chama isso
+  em ciclo).
+- Ligação com `OrchardCore.Workflows` de verdade, se algum dia fizer sentido
+  trocar os dois métodos públicos do orquestrador por atividades visuais
+  suspensas/retomadas.
+
+---
+
+# Endpoint público: `LandingPageController` (módulo AcquisitionAgent)
+
+Fecha o critério de sucesso da Fase 1 (seção 10 do documento de arquitetura):
+"usuário descreve o negócio → recebe uma landing page publicada e funcional
+sem tocar em código". Diferente de `ApprovalController` (módulo `RiskGate`,
+com `[Admin]`), este é voltado para o usuário final do SaaS — usa
+`[Authorize]` simples, sem permissão dedicada.
+
+## Por que `[Authorize]` sem uma Permission específica
+
+Simplificação deliberada da Fase 1: qualquer usuário autenticado no tenant
+pode gerar uma landing page para o próprio negócio. Como cada tenant já é um
+cliente isolado do SaaS (seção 1 da especificação técnica), não existe
+"negócio de outra pessoa" para vazar dentro do mesmo tenant ainda. Uma
+permissão dedicada (como `RiskGatePermissions.ManageApprovals`) passa a fazer
+sentido a partir do momento em que um tenant tiver mais de um usuário com
+papéis diferentes — não é o caso da Fase 1.
+
+## Estrutura nova
+
+```
+src/AutonomiaSaaS.Modules.AcquisitionAgent/
+├── Controllers/LandingPageController.cs   # Index (form) + Generate (POST)
+├── ViewModels/LandingPageViewModels.cs
+├── Views/
+│   ├── _ViewImports.cshtml
+│   └── LandingPage/
+│       ├── Index.cshtml                    # Formulário de descrição do negócio
+│       └── Result.cshtml                   # Link de staging + aviso de aprovação pendente
+└── MainMenu.cs                             # INavigationProvider do menu "main" (não Admin)
+```
+
+## Decisão de tratamento de erro
+
+`Generate` tem um `try/catch` em volta da chamada ao orquestrador que **não
+existe** no `ApprovalController`. Motivo: uma falha aqui (ex: chave de API da
+Anthropic ausente) acontece **antes** de qualquer `AgentTask` existir — não
+há tarefa nenhuma para apontar no painel de erros, então a mensagem precisa
+aparecer direto pro usuário nesta tela, não só no log. Já uma falha dentro do
+fluxo de aprovação sempre tem uma tarefa existente para registrar o que
+aconteceu (`Revertida`), por isso o tratamento lá é mais simples.
+
+## Mesmos avisos de risco de compilação do `RiskGate`
+
+O `.csproj` mudou para `Sdk="Microsoft.NET.Sdk.Razor"` com
+`AddRazorSupportForMvc` e `OrchardCore.Module.Targets`, pelo mesmo motivo e
+com o mesmo nível de incerteza já registrado na seção do Painel de Aprovação.
+Um ponto novo aqui: `LandingPageController` injeta `ShellSettings` (de
+`OrchardCore.Environment.Shell`) para obter o nome do tenant atual como
+`TenantId` — tenho confiança razoável de que esse tipo existe e se comporta
+assim, mas não confirmei se ele já vem transitivamente com
+`OrchardCore.Module.Targets` ou se precisaria de um pacote adicional
+explícito.
+
+## Fluxo completo agora, de ponta a ponta
+
+1. Usuário logado acessa "Gerar landing page" no menu principal do site.
+2. Descreve o negócio, clica em gerar.
+3. `AcquisitionAgentOrchestrator.GenerateLandingPageAsync` roda os passos 1-6
+   (seção 5 da especificação técnica): gera a landing page, propõe a tarefa
+   de baixo risco (auto-executa), faz deploy em staging, verifica saúde, e
+   propõe a tarefa de alto risco de promoção para produção.
+4. Usuário vê o link de staging e um aviso claro: falta aprovação humana
+   para publicar de verdade.
+5. Um administrador acessa `/Admin` → "Autonomia SaaS" → "Aprovações" e
+   aprova ou rejeita.
+6. Se aprovar, `ApprovedTaskDispatcher` chama de volta
+   `AcquisitionAgentApprovedTaskExecutor`, que chama
+   `PromoteToProductionAsync` — promove de verdade, ou reverte em caso de
+   falha.
+
+Esse é o loop inteiro da Fase 1 fechado, do texto digitado pelo usuário até a
+decisão humana de publicar. O que resta (expiração automática, Workflows
+visuais) são refinamentos de robustez, não bloqueadores do fluxo principal.

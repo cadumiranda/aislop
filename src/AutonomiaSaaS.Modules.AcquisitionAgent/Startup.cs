@@ -1,7 +1,9 @@
 using AutonomiaSaaS.Modules.AcquisitionAgent.Services;
 using Microsoft.Extensions.Configuration;
+using AutonomiaSaaS.Modules.BusinessCore.Services;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 
 namespace AutonomiaSaaS.Modules.AcquisitionAgent;
 
@@ -17,6 +19,8 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IAcquisitionAgentOrchestrator, AcquisitionAgentOrchestrator>();
+	    services.AddScoped<IApprovedTaskExecutor, AcquisitionAgentApprovedTaskExecutor>();
+        services.AddScoped<INavigationProvider, MainMenu>();
 
         var vercelToken = _configuration["Vercel:ApiToken"];
         var useFake = _configuration.GetValue<bool>("Vercel:UseFake", defaultValue: true);

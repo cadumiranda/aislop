@@ -21,5 +21,6 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IAgentTaskStore, AgentTaskStore>();
         services.AddScoped<IBusinessContextStore, BusinessContextStore>();
+        services.AddScoped<IApprovedTaskDispatcher, ApprovedTaskDispatcher>();
     }
 }

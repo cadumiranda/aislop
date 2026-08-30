@@ -1,0 +1,26 @@
+@model AutonomiaSaaS.Modules.AcquisitionAgent.ViewModels.BusinessDescriptionInputViewModel
+@{
+    ViewData["Title"] = "Gerar landing page";
+}
+
+<h1>Conte sobre o seu negócio</h1>
+<p>
+    Descreva seu negócio e o Agente de Aquisição vai gerar uma landing page
+    completa, já publicada em ambiente de teste. Depois de revisada, a
+    promoção para o site final passa por uma aprovação sua.
+</p>
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<form asp-action="Generate" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        <label asp-for="BusinessDescription">Descrição do negócio</label>
+        <textarea asp-for="BusinessDescription" class="form-control" rows="6"
+                  placeholder="Ex: Uma cafeteria de bairro especializada em grãos especiais, ambiente aconchegante para trabalhar, também vende grãos e acessórios para preparo em casa."></textarea>
+        <span asp-validation-for="BusinessDescription" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Gerar landing page</button>
+</form>
