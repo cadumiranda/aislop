@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>AutonomiaSaaS.Modules.BusinessCore</RootNamespace>
@@ -12,10 +12,12 @@
          versão do host AutonomiaSaaS.Web (gerenciada centralmente, idealmente
          via Directory.Packages.props quando o host existir). Ajuste a versão
          abaixo para a que estiver no seu AutonomiaSaaS.Web.csproj. -->
-    <PackageReference Include="OrchardCore.ContentManagement" Version="2.1.0" />
-    <PackageReference Include="OrchardCore.ContentManagement.Abstractions" Version="2.1.0" />
-    <PackageReference Include="OrchardCore.Data.Abstractions" Version="2.1.0" />
-    <PackageReference Include="YesSql.Abstractions" Version="5.1.4" />
+    <PackageReference Include="OrchardCore.ContentManagement" Version="3.0.1" />
+    <PackageReference Include="OrchardCore.ContentManagement.Abstractions" Version="3.0.1" />
+    <PackageReference Include="OrchardCore.Data.Abstractions" Version="3.0.1" />
+    <!-- Removido referência explícita a YesSql.Abstractions para evitar conflitos
+         de versão com dependências transitivas do Orchard Core. O pacote
+         correto será resolvido pela dependência OrchardCore.Data.Abstractions. -->
   </ItemGroup>
 
   <!-- BusinessCore não referencia AgentRuntime nem nenhum outro módulo de

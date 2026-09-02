@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>AutonomiaSaaS.Modules.RiskGate</RootNamespace>
@@ -20,10 +20,10 @@
          isso com base no padrão usual de projeto de módulo do Orchard Core,
          mas não tenho como confirmar a versão exata nem se o nome do pacote
          mudou em versões recentes sem acesso ao NuGet. -->
-    <PackageReference Include="OrchardCore.Module.Targets" Version="2.1.0" />
-    <PackageReference Include="OrchardCore.Admin" Version="2.1.0" />
-    <PackageReference Include="OrchardCore.Navigation" Version="2.1.0" />
-    <PackageReference Include="Elsa.Workflows.Core" Version="3.3.0" />
+    <PackageReference Include="OrchardCore.Module.Targets" Version="3.0.1" />
+    <PackageReference Include="OrchardCore.Admin" Version="3.0.1" />
+    <PackageReference Include="OrchardCore.Navigation" Version="3.0.1" />
+    <PackageReference Include="Elsa.Workflows.Core" Version="3.7.1" />
   </ItemGroup>
 
   <ItemGroup>
