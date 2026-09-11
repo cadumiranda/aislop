@@ -8,12 +8,13 @@ using OrchardCore.Notifications.Models;
 using OrchardCore.Users;
 using Xunit;
 
-namespace AutonomiaSaaS.Modules.RiskGate.Tests;
+namespace AutonomiaSaaS.Modules.RiskGate.ApprovalExpiration.Tests;
 
 public sealed class FakeUser : IUser
 {
+    private string? _userName;
     public required string UserId { get; init; }
-    public string UserName { get; set; } = string.Empty;
+    public string UserName { get => string.IsNullOrEmpty(_userName) ? UserId : _userName!; set => _userName = value; }
     public string Email { get; set; } = string.Empty;
 }
 
@@ -28,26 +29,21 @@ public sealed class FakeRecipientResolver : IApprovalExpirationRecipientResolver
 
 public sealed class FakeNotificationService : INotificationService
 {
-    public List<(IUser User, NotificationMessage Notification)> SentNotifications { get; } = new();
+    public List<(IUser User, INotificationMessage Notification)> SentNotifications { get; } = new();
     public HashSet<string> UserIdsThatThrow { get; } = new();
 
-    public Task<NotificationSendResult> SendAsync(object user_, NotificationMessage notification, CancellationToken cancellationToken = default)
+    public Task<NotificationSendResult> SendAsync(object notify, INotificationMessage message, CancellationToken cancellationToken = default)
     {
-        var user = user_ as IUser;
-        if(user == null)
-            throw new ArgumentNullException(nameof(user_));
+        var user = notify as IUser;
+        if (user == null)
+            throw new ArgumentNullException(nameof(notify));
 
         if (UserIdsThatThrow.Contains(user.UserName))
         {
             throw new InvalidOperationException($"falha simulada ao notificar {user.UserName}");
         }
-        SentNotifications.Add((user, notification));
+        SentNotifications.Add((user, message));
         return Task.FromResult(new NotificationSendResult());
-    }
-
-    public Task<NotificationSendResult> SendAsync(object notify, INotificationMessage message, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
     }
 }
 
