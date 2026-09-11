@@ -1,9 +1,11 @@
+using AutonomiaSaaS.Modules.RiskGate.BackgroundTasks;
 using AutonomiaSaaS.Modules.RiskGate.Domain;
 using AutonomiaSaaS.Modules.RiskGate.Services;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
+using OrchardCore.BackgroundTasks;
 
 namespace AutonomiaSaaS.Modules.RiskGate;
 
@@ -26,5 +28,26 @@ public sealed class Startup : StartupBase
         // Permissions e AdminMenu precisam ser registrados explicitamente.
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<INavigationProvider, AdminMenu>();
+
+        // Trecho a ADICIONAR ao ConfigureServices do Startup.cs REAL de AutonomiaSaaS.Modules.RiskGate —
+        // este não é um Startup.cs completo, porque o resto do módulo (ApprovalController, Permissions,
+        // AdminMenu, TaskRiskGateway, ActionRiskCatalog, BudgetCapEvaluator) já existe e não foi anexado.
+        //
+
+
+        // Trecho a ADICIONAR ao ConfigureServices do Startup.cs REAL de AutonomiaSaaS.Modules.RiskGate —
+        // este não é um Startup.cs completo, porque o resto do módulo (ApprovalController, Permissions,
+        // AdminMenu, TaskRiskGateway, ActionRiskCatalog, BudgetCapEvaluator) já existe e não foi anexado.
+        //
+        // using OrchardCore.BackgroundTasks;
+        // using AutonomiaSaaS.Modules.RiskGate.BackgroundTasks;
+        // using Microsoft.AspNetCore.Identity;
+        // using OrchardCore.Users;
+
+        services.AddScoped<IBackgroundTask, ApprovalExpirationBackgroundTask>();
+
+        // Notificação real via OrchardCore.Notifications, no lugar do stub de log.
+        services.AddScoped<IApprovalExpirationRecipientResolver, AdministratorRoleRecipientResolver>();
+        services.AddScoped<IApprovalExpirationNotifier, OrchardNotificationApprovalExpirationNotifier>();
     }
 }

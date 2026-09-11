@@ -2,7 +2,7 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Autonomia SaaS - Risk Gate",
-    Author = "Autonomia SaaS",
+    Author = "Carlos Eduardo Miranda",
     Website = "https://example.com",
     Version = "0.1.0",
     Description = "Classificador de risco (tipo de ação + magnitude comparada ao budget_caps do " +

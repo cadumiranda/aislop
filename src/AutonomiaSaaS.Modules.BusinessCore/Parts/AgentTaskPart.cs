@@ -23,6 +23,8 @@ public sealed class AgentTaskPart : ContentPart
     /// </summary>
     public string AgentName { get; set; } = string.Empty;
 
+    public long? TaskId => ContentItem?.Id;
+
     public string Action { get; set; } = string.Empty;
 
     public RiskLevel RiskLevel { get; set; }

@@ -26,7 +26,7 @@ public interface IApprovedTaskExecutor
     /// só o próprio agente sabe interpretar seu PayloadJson e decidir o que
     /// significa sucesso ou falha para aquela ação específica.
     /// </summary>
-    Task ExecuteApprovedTaskAsync(AgentTaskPart task, string taskId, CancellationToken cancellationToken = default);
+    Task ExecuteApprovedTaskAsync(AgentTaskPart task, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -37,7 +37,7 @@ public interface IApprovedTaskExecutor
 /// </summary>
 public interface IApprovedTaskDispatcher
 {
-    Task DispatchAsync(AgentTaskPart task, string taskId, CancellationToken cancellationToken = default);
+    Task DispatchAsync(AgentTaskPart task, CancellationToken cancellationToken = default);
 }
 
 public sealed class ApprovedTaskDispatcher : IApprovedTaskDispatcher
@@ -49,7 +49,7 @@ public sealed class ApprovedTaskDispatcher : IApprovedTaskDispatcher
         _executorsByAgentName = executors.ToDictionary(e => e.AgentName, StringComparer.OrdinalIgnoreCase);
     }
 
-    public Task DispatchAsync(AgentTaskPart task, string taskId, CancellationToken cancellationToken = default)
+    public Task DispatchAsync(AgentTaskPart task, CancellationToken cancellationToken = default)
     {
         if (!_executorsByAgentName.TryGetValue(task.AgentName, out var executor))
         {
@@ -63,6 +63,6 @@ public sealed class ApprovedTaskDispatcher : IApprovedTaskDispatcher
                 "O módulo desse agente precisa implementar e registrar essa interface.");
         }
 
-        return executor.ExecuteApprovedTaskAsync(task, taskId, cancellationToken);
+        return executor.ExecuteApprovedTaskAsync(task, cancellationToken);
     }
 }

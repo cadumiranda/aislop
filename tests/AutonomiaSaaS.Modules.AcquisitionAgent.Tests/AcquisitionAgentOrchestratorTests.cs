@@ -61,7 +61,7 @@ public class AcquisitionAgentOrchestratorTests
 
         var result = await orchestrator.GenerateLandingPageAsync("tenant_a", "Uma cafeteria em Botafogo");
 
-        var productionTask = store.AllTasks[result.ProductionApprovalTaskId!];
+        var productionTask = store.AllTasks[result.ProductionApprovalTaskId.Value];
         Assert.Equal(AgentTaskStatus.AguardandoAprovacao, productionTask.Status);
     }
 
@@ -91,10 +91,10 @@ public class AcquisitionAgentOrchestratorTests
     public async Task PromoteToProductionAsync_TarefaNaoAprovada_LancaExcecaoENuncaChamaDeploy()
     {
         var (orchestrator, _, _, store, deployment) = BuildOrchestrator();
-        store.Seed("task_producao", AgentTaskStatus.AguardandoAprovacao); // ainda não aprovada
+        store.Seed(1, AgentTaskStatus.AguardandoAprovacao); // ainda não aprovada
 
         await Assert.ThrowsAsync<InvalidOperationException>(
-            () => orchestrator.PromoteToProductionAsync("task_producao", "staging_dep_1"));
+            () => orchestrator.PromoteToProductionAsync(1, "staging_dep_1"));
 
         Assert.False(deployment.RollbackCalled);
     }
@@ -105,13 +105,13 @@ public class AcquisitionAgentOrchestratorTests
     public async Task PromoteToProductionAsync_TarefaAprovadaEDeploySaudavel_ConcluiComUrlDeProducao()
     {
         var (orchestrator, _, _, store, _) = BuildOrchestrator();
-        store.Seed("task_producao", AgentTaskStatus.Aprovada);
+        store.Seed(1, AgentTaskStatus.Aprovada);
 
-        var result = await orchestrator.PromoteToProductionAsync("task_producao", "staging_dep_1");
+        var result = await orchestrator.PromoteToProductionAsync(1, "staging_dep_1");
 
         Assert.Equal(AgentTaskStatus.Concluida, result.FinalStatus);
         Assert.Equal("https://producao.example.com", result.ProductionUrl);
-        Assert.Equal(AgentTaskStatus.Concluida, store.AllTasks["task_producao"].Status);
+        Assert.Equal(AgentTaskStatus.Concluida, store.AllTasks[1].Status);
     }
 
     // --- PromoteToProductionAsync: falha depois de aprovada (rollback_action) ---
@@ -120,16 +120,16 @@ public class AcquisitionAgentOrchestratorTests
     public async Task PromoteToProductionAsync_DeployLancaExcecao_ChamaRollbackEMarcaRevertida()
     {
         var (orchestrator, _, _, store, deployment) = BuildOrchestrator();
-        store.Seed("task_producao", AgentTaskStatus.Aprovada);
+        store.Seed(1, AgentTaskStatus.Aprovada);
         deployment.ThrowOnPromote = true;
 
-        var result = await orchestrator.PromoteToProductionAsync("task_producao", "staging_dep_1");
+        var result = await orchestrator.PromoteToProductionAsync(1, "staging_dep_1");
 
         Assert.Equal(AgentTaskStatus.Revertida, result.FinalStatus);
         Assert.Null(result.ProductionUrl);
         Assert.True(deployment.RollbackCalled);
         Assert.Equal("staging_dep_1", deployment.LastRollbackDeploymentId);
-        Assert.Equal(AgentTaskStatus.Revertida, store.AllTasks["task_producao"].Status);
+        Assert.Equal(AgentTaskStatus.Revertida, store.AllTasks[1].Status);
     }
 
     [Fact]
@@ -140,10 +140,10 @@ public class AcquisitionAgentOrchestratorTests
         // falha (exceção vs. resultado não saudável) precisam levar ao mesmo
         // desfecho de segurança.
         var (orchestrator, _, _, store, deployment) = BuildOrchestrator();
-        store.Seed("task_producao", AgentTaskStatus.Aprovada);
+        store.Seed(1, AgentTaskStatus.Aprovada);
         deployment.ProductionHealthAfterPromote = DeploymentStatus.Unhealthy;
 
-        var result = await orchestrator.PromoteToProductionAsync("task_producao", "staging_dep_1");
+        var result = await orchestrator.PromoteToProductionAsync(1, "staging_dep_1");
 
         Assert.Equal(AgentTaskStatus.Revertida, result.FinalStatus);
         Assert.True(deployment.RollbackCalled);
@@ -155,6 +155,6 @@ public class AcquisitionAgentOrchestratorTests
         var (orchestrator, _, _, _, _) = BuildOrchestrator();
 
         await Assert.ThrowsAsync<InvalidOperationException>(
-            () => orchestrator.PromoteToProductionAsync("task_nao_existe", "staging_dep_1"));
+            () => orchestrator.PromoteToProductionAsync(1, "staging_dep_1"));
     }
 }

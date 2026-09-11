@@ -34,7 +34,7 @@ public sealed class AcquisitionAgentApprovedTaskExecutor : IApprovedTaskExecutor
     }
 
     public async Task ExecuteApprovedTaskAsync(
-        AgentTaskPart task, string taskId, CancellationToken cancellationToken = default)
+        AgentTaskPart task, CancellationToken cancellationToken = default)
     {
         // Hoje o único tipo de AgentTask de alto risco que este agente
         // propõe é deploy_producao (ver ActionRiskCatalog.HighRiskActions) —
@@ -44,16 +44,16 @@ public sealed class AcquisitionAgentApprovedTaskExecutor : IApprovedTaskExecutor
         // Por enquanto, um único formato de payload é suficiente.
         var payload = JsonSerializer.Deserialize<DeployProducaoPayload>(task.PayloadJson, DeserializeOptions)
             ?? throw new InvalidOperationException(
-                $"PayloadJson da tarefa '{taskId}' não pôde ser interpretado como um payload de deploy_producao: '{task.PayloadJson}'.");
+                $"PayloadJson da tarefa '{task.TaskId}' não pôde ser interpretado como um payload de deploy_producao: '{task.PayloadJson}'.");
 
         if (string.IsNullOrWhiteSpace(payload.StagingDeploymentId))
         {
             throw new InvalidOperationException(
-                $"Tarefa '{taskId}' não tem stagingDeploymentId no PayloadJson — não é possível promover.");
+                $"Tarefa '{task.TaskId}' não tem stagingDeploymentId no PayloadJson — não é possível promover.");
         }
 
         await _orchestrator
-            .PromoteToProductionAsync(taskId, payload.StagingDeploymentId, cancellationToken)
+            .PromoteToProductionAsync(task.TaskId.Value, payload.StagingDeploymentId, cancellationToken)
             .ConfigureAwait(false);
     }
 

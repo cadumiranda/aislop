@@ -17,7 +17,7 @@ public sealed record ProposeActionRequest(
 );
 
 public sealed record ProposeActionResult(
-    string TaskId,
+    long TaskId,
     RiskLevel RiskLevel,
     AgentTaskStatus Status,
     string ClassificationReason

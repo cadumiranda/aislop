@@ -2,7 +2,7 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Autonomia SaaS - Acquisition Agent",
-    Author = "Autonomia SaaS",
+    Author = "Carlos Eduardo Miranda",
     Website = "https://example.com",
     Version = "0.1.0",
     Description = "Agente de Aquisição da Fase 1 (roadmap, seção 11 do documento de arquitetura): " +

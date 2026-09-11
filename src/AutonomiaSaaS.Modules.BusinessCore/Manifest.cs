@@ -2,7 +2,7 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Autonomia SaaS - Business Core",
-    Author = "Autonomia SaaS",
+    Author = "Carlos Eduardo Miranda",
     Website = "https://example.com",
     Version = "0.1.0",
     Description = "Content Types e serviços centrais do negócio: BusinessContext e AgentTask, " +

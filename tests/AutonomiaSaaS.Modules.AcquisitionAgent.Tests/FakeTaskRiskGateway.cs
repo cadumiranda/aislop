@@ -34,7 +34,7 @@ internal sealed class FakeTaskRiskGateway : ITaskRiskGateway
             ? AgentTaskStatus.AguardandoAprovacao
             : AgentTaskStatus.AutoExecutando;
 
-        var taskId = $"task_{_nextId++}";
+        var taskId = (long)_nextId++;
         _store?.Seed(taskId, status);
 
         return Task.FromResult(new ProposeActionResult(taskId, riskLevel, status, "fake"));

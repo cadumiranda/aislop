@@ -38,7 +38,7 @@ public interface IAcquisitionAgentOrchestrator
     /// "Aprovar" no painel). Promove de fato, ou reverte em caso de falha.
     /// </summary>
     Task<PromoteToProductionResult> PromoteToProductionAsync(
-        string productionTaskId, string stagingDeploymentId, CancellationToken cancellationToken = default);
+        long productionTaskId, string stagingDeploymentId, CancellationToken cancellationToken = default);
 }
 
 public sealed class AcquisitionAgentOrchestrator : IAcquisitionAgentOrchestrator
@@ -150,7 +150,7 @@ public sealed class AcquisitionAgentOrchestrator : IAcquisitionAgentOrchestrator
     }
 
     public async Task<PromoteToProductionResult> PromoteToProductionAsync(
-        string productionTaskId, string stagingDeploymentId, CancellationToken cancellationToken = default)
+        long productionTaskId, string stagingDeploymentId, CancellationToken cancellationToken = default)
     {
         var task = await _agentTaskStore.GetByIdAsync(productionTaskId, cancellationToken)
             .ConfigureAwait(false)

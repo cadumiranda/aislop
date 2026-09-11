@@ -19,10 +19,10 @@ public sealed class BusinessDescriptionInputViewModel
 /// </summary>
 public sealed class GenerateLandingPageResultViewModel
 {
-    public required string LandingPageTaskId { get; init; }
+    public required long LandingPageTaskId { get; init; }
     public required AgentTaskStatus LandingPageTaskStatus { get; init; }
     public string? StagingUrl { get; init; }
-    public string? ProductionApprovalTaskId { get; init; }
+    public long? ProductionApprovalTaskId { get; init; }
 
     /// <summary>
     /// True quando o deploy em staging não ficou saudável — a View usa isso

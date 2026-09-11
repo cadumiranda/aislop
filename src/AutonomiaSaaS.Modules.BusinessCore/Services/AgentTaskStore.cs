@@ -17,7 +17,7 @@ public sealed class AgentTaskStore : IAgentTaskStore
         _session = session;
     }
 
-    public async Task<string> CreateAsync(
+    public async Task<long> CreateAsync(
         CreateAgentTaskRequest request, CancellationToken cancellationToken = default)
     {
         var contentItem = await _contentManager.NewAsync("AgentTask");
@@ -35,20 +35,20 @@ public sealed class AgentTaskStore : IAgentTaskStore
 
         await _contentManager.CreateAsync(contentItem, VersionOptions.Published);
 
-        return contentItem.ContentItemId;
+        return contentItem.Id;
     }
 
     public async Task<AgentTaskPart?> GetByIdAsync(
-        string taskId, CancellationToken cancellationToken = default)
+        long taskId, CancellationToken cancellationToken = default)
     {
-        var contentItem = await _contentManager.GetAsync(taskId, VersionOptions.Latest);
+        var contentItem = await _contentManager.GetAsync(taskId.ToString(), VersionOptions.Latest);
         return contentItem?.As<AgentTaskPart>();
     }
 
     public async Task TransitionAsync(
-        string taskId, AgentTaskStatus newStatus, CancellationToken cancellationToken = default)
+        long taskId, AgentTaskStatus newStatus, CancellationToken cancellationToken = default)
     {
-        var contentItem = await _contentManager.GetAsync(taskId, VersionOptions.Latest)
+        var contentItem = await _contentManager.GetAsync(taskId.ToString(), VersionOptions.Latest)
             ?? throw new InvalidOperationException($"AgentTask '{taskId}' não encontrada.");
 
         var part = contentItem.As<AgentTaskPart>()
@@ -75,9 +75,9 @@ public sealed class AgentTaskStore : IAgentTaskStore
     }
 
     public async Task SetApprovalTimeoutAsync(
-        string taskId, DateTimeOffset timeout, CancellationToken cancellationToken = default)
+        long taskId, DateTimeOffset timeout, CancellationToken cancellationToken = default)
     {
-        var contentItem = await _contentManager.GetAsync(taskId, VersionOptions.Latest)
+        var contentItem = await _contentManager.GetAsync(taskId.ToString(), VersionOptions.Latest)
             ?? throw new InvalidOperationException($"AgentTask '{taskId}' não encontrada.");
 
         var part = contentItem.As<AgentTaskPart>()

@@ -33,6 +33,7 @@
          classificação de risco não precisa saber como uma chamada de modelo
          é feita. -->
     <ProjectReference Include="..\AutonomiaSaaS.Modules.BusinessCore\AutonomiaSaaS.Modules.BusinessCore.csproj" />
+    <ProjectReference Include="..\AutonomiaSaaS.Modules.RiskGate.ApprovalExpiration\AutonomiaSaaS.Modules.RiskGate.ApprovalExpiration.csproj" />
   </ItemGroup>
 
 </Project>

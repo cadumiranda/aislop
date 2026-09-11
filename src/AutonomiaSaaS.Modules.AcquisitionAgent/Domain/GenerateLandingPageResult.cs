@@ -10,11 +10,11 @@ namespace AutonomiaSaaS.Modules.AcquisitionAgent.Domain;
 /// decisão humana antes de promover para produção (seção 4 e 5 da arquitetura).
 /// </summary>
 public sealed record GenerateLandingPageResult(
-    string LandingPageTaskId,
+    long LandingPageTaskId,
     AgentTaskStatus LandingPageTaskStatus,
     string? StagingUrl,
     string? StagingDeploymentId,
-    string? ProductionApprovalTaskId
+    long? ProductionApprovalTaskId
 );
 
 /// <summary>

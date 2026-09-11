@@ -26,9 +26,9 @@ public interface IAgentTaskStore
     /// o risco (módulo RiskGate, ainda não implementado) chamar
     /// TransitionAsync logo em seguida.
     /// </summary>
-    Task<string> CreateAsync(CreateAgentTaskRequest request, CancellationToken cancellationToken = default);
+    Task<long> CreateAsync(CreateAgentTaskRequest request, CancellationToken cancellationToken = default);
 
-    Task<AgentTaskPart?> GetByIdAsync(string taskId, CancellationToken cancellationToken = default);
+    Task<AgentTaskPart?> GetByIdAsync(long taskId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Move a tarefa para um novo status, validando a transição contra
@@ -36,7 +36,7 @@ public interface IAgentTaskStore
     /// InvalidStateTransitionException se a transição não for permitida —
     /// deixa o erro subir, não engole silenciosamente.
     /// </summary>
-    Task TransitionAsync(string taskId, AgentTaskStatus newStatus, CancellationToken cancellationToken = default);
+    Task TransitionAsync(long taskId, AgentTaskStatus newStatus, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Grava o momento em que a aprovação expira. Separado de TransitionAsync
@@ -48,7 +48,7 @@ public interface IAgentTaskStore
     /// nunca antes nem em qualquer outro estado.
     /// </summary>
     Task SetApprovalTimeoutAsync(
-        string taskId, DateTimeOffset timeout, CancellationToken cancellationToken = default);
+        long taskId, DateTimeOffset timeout, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Tarefas aguardando aprovação, ordenadas pelo timeout mais próximo de

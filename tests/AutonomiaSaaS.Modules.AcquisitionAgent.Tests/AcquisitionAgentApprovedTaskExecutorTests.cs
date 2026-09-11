@@ -10,7 +10,7 @@ public class AcquisitionAgentApprovedTaskExecutorTests
 {
     private sealed class FakeOrchestrator : IAcquisitionAgentOrchestrator
     {
-        public string? LastProductionTaskId { get; private set; }
+        public long? LastProductionTaskId { get; private set; }
         public string? LastStagingDeploymentId { get; private set; }
 
         public Task<GenerateLandingPageResult> GenerateLandingPageAsync(
@@ -18,7 +18,7 @@ public class AcquisitionAgentApprovedTaskExecutorTests
             => throw new NotSupportedException("Não usado neste teste.");
 
         public Task<PromoteToProductionResult> PromoteToProductionAsync(
-            string productionTaskId, string stagingDeploymentId, CancellationToken cancellationToken = default)
+            long productionTaskId, string stagingDeploymentId, CancellationToken cancellationToken = default)
         {
             LastProductionTaskId = productionTaskId;
             LastStagingDeploymentId = stagingDeploymentId;
@@ -37,13 +37,14 @@ public class AcquisitionAgentApprovedTaskExecutorTests
         var executor = new AcquisitionAgentApprovedTaskExecutor(orchestrator);
         var task = new AgentTaskPart
         {
+            ContentItem = new OrchardCore.ContentManagement.ContentItem { Id = 1 },
             AgentName = "acquisition_agent",
             PayloadJson = """{"stagingDeploymentId": "staging_dep_42"}"""
         };
 
-        await executor.ExecuteApprovedTaskAsync(task, "task_producao_1");
+        await executor.ExecuteApprovedTaskAsync(task);
 
-        Assert.Equal("task_producao_1", orchestrator.LastProductionTaskId);
+        Assert.Equal(1, orchestrator.LastProductionTaskId);
         Assert.Equal("staging_dep_42", orchestrator.LastStagingDeploymentId);
     }
 
@@ -55,7 +56,7 @@ public class AcquisitionAgentApprovedTaskExecutorTests
         var task = new AgentTaskPart { AgentName = "acquisition_agent", PayloadJson = "{}" };
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
-            () => executor.ExecuteApprovedTaskAsync(task, "task_producao_1"));
+            () => executor.ExecuteApprovedTaskAsync(task));
 
         Assert.Contains("stagingDeploymentId", exception.Message);
     }

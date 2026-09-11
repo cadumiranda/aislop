@@ -58,7 +58,7 @@ public sealed class ApprovalController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Approve(string taskId)
+    public async Task<IActionResult> Approve(long taskId)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RiskGatePermissions.ManageApprovals))
         {
@@ -85,7 +85,7 @@ public sealed class ApprovalController : Controller
             var approvedTask = await _agentTaskStore.GetByIdAsync(taskId)
                 ?? throw new InvalidOperationException($"AgentTask '{taskId}' sumiu entre a aprovação e o despacho.");
 
-            await _approvedTaskDispatcher.DispatchAsync(approvedTask, taskId);
+            await _approvedTaskDispatcher.DispatchAsync(approvedTask);
 
             TempData["SuccessMessage"] = S["Ação aprovada e executada."].Value;
         }
@@ -104,7 +104,7 @@ public sealed class ApprovalController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Reject(string taskId)
+    public async Task<IActionResult> Reject(long taskId)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RiskGatePermissions.ManageApprovals))
         {

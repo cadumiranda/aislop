@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="NovaPasta\**" />
+    <EmbeddedResource Remove="NovaPasta\**" />
+    <None Remove="NovaPasta\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="ApprovalExpirationBackgroundTask.cs" />
+    <Compile Remove="BusinessCoreShims.cs" />
+    <Compile Remove="Startup.ApprovalExpiration.snippet.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="AutonomiaSaaS.Modules.RiskGate.ApprovalExpiration.csproj.Backup.tmp" />
+  </ItemGroup>
+
+  <!--
+    Igual à nota no módulo de Sandbox: não fixe aqui a versão de pacotes OrchardCore.* que o
+    host (AutonomiaSaaS.Web) já resolve — isso já causou conflito real de versão do YesSql
+    (spec v2.0, seção 8.3). Este OrchardCore.BackgroundTasks é só para este pacote isolado
+    compilar sozinho nesta entrega; ao colar dentro do projeto RiskGate real, remova esta
+    PackageReference e deixe vir transitivamente do host, como os outros módulos já fazem.
+  -->
+  <ItemGroup>
+	  <PackageReference Include="OrchardCore.BackgroundTasks" Version="3.0.1" />
+	  <PackageReference Include="OrchardCore.Notifications" Version="3.0.1" />
+	  <PackageReference Include="OrchardCore.Users" Version="3.0.1" />
+	  <PackageReference Include="xunit.assert" Version="2.9.3" />
+	  <PackageReference Include="xunit.extensibility.core" Version="2.9.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AutonomiaSaaS.Modules.BusinessCore\AutonomiaSaaS.Modules.BusinessCore.csproj" />
+  </ItemGroup>
+
+</Project>

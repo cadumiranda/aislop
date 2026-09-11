@@ -14,7 +14,7 @@ public class ApprovedTaskDispatcherTests
 
         public FakeExecutor(string agentName) => AgentName = agentName;
 
-        public Task ExecuteApprovedTaskAsync(AgentTaskPart task, string taskId, CancellationToken cancellationToken = default)
+        public Task ExecuteApprovedTaskAsync(AgentTaskPart task, CancellationToken cancellationToken = default)
         {
             WasCalled = true;
             LastTask = task;
@@ -30,7 +30,7 @@ public class ApprovedTaskDispatcherTests
         var dispatcher = new ApprovedTaskDispatcher(new[] { acquisitionExecutor, outroExecutor });
         var task = new AgentTaskPart { AgentName = "acquisition_agent" };
 
-        await dispatcher.DispatchAsync(task, "task_1");
+        await dispatcher.DispatchAsync(task);
 
         Assert.True(acquisitionExecutor.WasCalled);
         Assert.False(outroExecutor.WasCalled);
@@ -43,7 +43,7 @@ public class ApprovedTaskDispatcherTests
         var dispatcher = new ApprovedTaskDispatcher(new[] { executor });
         var task = new AgentTaskPart { AgentName = "ACQUISITION_AGENT" };
 
-        await dispatcher.DispatchAsync(task, "task_1");
+        await dispatcher.DispatchAsync(task);
 
         Assert.True(executor.WasCalled);
     }
@@ -55,7 +55,7 @@ public class ApprovedTaskDispatcherTests
         var task = new AgentTaskPart { AgentName = "agente_sem_executor" };
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
-            () => dispatcher.DispatchAsync(task, "task_1"));
+            () => dispatcher.DispatchAsync(task));
 
         Assert.Contains("agente_sem_executor", exception.Message);
     }
