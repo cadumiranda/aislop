@@ -1,3 +1,5 @@
+using AutonomiaSaaS.Modules.AgentRuntime.ModelRouting;
+
 namespace AutonomiaSaaS.Modules.AgentRuntime.Cost;
 
 /// <summary>
@@ -7,9 +9,11 @@ namespace AutonomiaSaaS.Modules.AgentRuntime.Cost;
 /// como string para não criar acoplamento entre AgentRuntime e BusinessCore.
 /// </summary>
 public sealed record ModelCallCost(
-    string TaskId,
+    long TaskId,
+    string AgentName,
     string TenantId,
     string Model,
+    ActivityComplexity Complexity,
     int InputTokens,
     int OutputTokens,
     DateTimeOffset OccurredAt
@@ -32,5 +36,5 @@ public interface ICostLogger
     /// antes de disparar mais uma chamada — o teto em si não é aplicado aqui,
     /// é responsabilidade de quem orquestra a atividade de workflow.
     /// </summary>
-    Task<long> GetAccumulatedTokensForTaskAsync(string taskId, CancellationToken cancellationToken = default);
+    Task<long> GetAccumulatedTokensForTaskAsync(long taskId, CancellationToken cancellationToken = default);
 }

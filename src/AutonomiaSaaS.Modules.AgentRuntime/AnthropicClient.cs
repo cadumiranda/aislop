@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using AutonomiaSaaS.Modules.AgentRuntime.Models;
-using Microsoft.Extensions.Options;
 
 namespace AutonomiaSaaS.Modules.AgentRuntime;
 

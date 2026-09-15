@@ -1,7 +1,11 @@
 using AutonomiaSaaS.Modules.AgentRuntime.Cost;
+using AutonomiaSaaS.Modules.AgentRuntime.CostLogger;
+using AutonomiaSaaS.Modules.AgentRuntime.CostLogger.Storage;
 using AutonomiaSaaS.Modules.AgentRuntime.ModelRouting;
+using AutonomiaSaaS.Modules.AgentRuntime.Pricing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using YesSql.Indexes;
 
 namespace AutonomiaSaaS.Modules.AgentRuntime.DependencyInjection;
 
@@ -45,6 +49,10 @@ public static class ServiceCollectionExtensions
             httpClient.DefaultRequestHeaders.Add("anthropic-version", options.ApiVersion);
         });
 
+        services.AddScoped<IIndexProvider, CostLogEntryIndexProvider>();
+        services.AddScoped<ICostLogEntryStore, YesSqlCostLogEntryStore>();
+        services.AddSingleton<IModelPricingProvider, StaticModelPricingCatalog>();
+
         services.AddSingleton<IModelRouter, ModelRouter>();
         services.AddScoped<IAgentRuntime, AgentRuntimeService>();
 
@@ -62,6 +70,15 @@ public static class ServiceCollectionExtensions
     {
         services.AddAgentRuntime(configuration);
         services.AddSingleton<ICostLogger, InMemoryCostLogger>();
+        return services;
+    }
+
+    public static IServiceCollection AddPersistentAgentRuntime(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddAgentRuntime(configuration);
+        services.AddScoped<ICostLogger, PersistentCostLogger>();
         return services;
     }
 }

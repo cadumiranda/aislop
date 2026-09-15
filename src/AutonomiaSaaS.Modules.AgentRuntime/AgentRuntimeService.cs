@@ -37,8 +37,10 @@ public sealed class AgentRuntimeService : IAgentRuntime
         await _costLogger.LogAsync(
             new ModelCallCost(
                 TaskId: request.TaskId,
+                AgentName: request.AgentName,
                 TenantId: request.TenantId,
                 Model: response.Model,
+                Complexity: request.Complexity,
                 InputTokens: response.Usage.InputTokens,
                 OutputTokens: response.Usage.OutputTokens,
                 OccurredAt: DateTimeOffset.UtcNow),

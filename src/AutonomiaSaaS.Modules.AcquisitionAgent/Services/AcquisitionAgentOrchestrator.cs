@@ -222,7 +222,8 @@ public sealed class AcquisitionAgentOrchestrator : IAcquisitionAgentOrchestrator
         // comportamento incorreto para a Fase 1.
         var runtimeResult = await _agentRuntime.ExecuteAsync(
             new AgentRuntimeRequest(
-                TaskId: $"planning-{tenantId}",
+                TaskId: new Random().NextInt64(1000000, 2000000),
+                AgentName: $"planning-{tenantId}",
                 TenantId: tenantId,
                 Complexity: ActivityComplexity.Planning,
                 SystemPrompt: systemPrompt,

@@ -12,7 +12,7 @@ namespace AutonomiaSaaS.Modules.AgentRuntime.Cost;
 /// </summary>
 public sealed class InMemoryCostLogger : ICostLogger
 {
-    private readonly ConcurrentDictionary<string, long> _tokensByTask = new();
+    private readonly ConcurrentDictionary<long, long> _tokensByTask = new();
     private readonly ConcurrentBag<ModelCallCost> _history = new();
 
     public Task LogAsync(ModelCallCost cost, CancellationToken cancellationToken = default)
@@ -26,7 +26,7 @@ public sealed class InMemoryCostLogger : ICostLogger
         return Task.CompletedTask;
     }
 
-    public Task<long> GetAccumulatedTokensForTaskAsync(string taskId, CancellationToken cancellationToken = default)
+    public Task<long> GetAccumulatedTokensForTaskAsync(long taskId, CancellationToken cancellationToken = default)
     {
         _tokensByTask.TryGetValue(taskId, out var total);
         return Task.FromResult(total);

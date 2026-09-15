@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="OrchardCoreDataMigrationStub.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- Atualização: este módulo GANHOU Manifest.cs/Startup.cs (ver essa
          história no README) — a "class library pura" continua sendo a
          lógica de domínio, mas o módulo como um todo agora depende de
@@ -16,6 +20,8 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.11" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.11" />
     <PackageReference Include="OrchardCore.Module.Targets" Version="3.0.1" />
+    <PackageReference Include="OrchardCore.Data" Version="3.0.1" />
+    <PackageReference Include="YesSql.Abstractions" Version="5.1.0" />
   </ItemGroup>
 
 </Project>

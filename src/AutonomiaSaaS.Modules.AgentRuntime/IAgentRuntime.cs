@@ -9,7 +9,8 @@ namespace AutonomiaSaaS.Modules.AgentRuntime;
 /// corretos, sem que este módulo precise conhecer o Content Type AgentTask.
 /// </summary>
 public sealed record AgentRuntimeRequest(
-    string TaskId,
+    long TaskId,
+    string AgentName,
     string TenantId,
     ActivityComplexity Complexity,
     string SystemPrompt,

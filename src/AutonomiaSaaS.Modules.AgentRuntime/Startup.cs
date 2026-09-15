@@ -29,6 +29,6 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddAgentRuntimeInMemory(_configuration);
+        services.AddPersistentAgentRuntime(_configuration);
     }
 }

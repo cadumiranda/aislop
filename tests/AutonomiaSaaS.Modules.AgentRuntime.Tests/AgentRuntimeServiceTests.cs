@@ -28,7 +28,8 @@ public class AgentRuntimeServiceTests
         var service = new AgentRuntimeService(fakeClient, CreateRouter(), costLogger);
 
         var result = await service.ExecuteAsync(new AgentRuntimeRequest(
-            TaskId: "task_1",
+            TaskId: 1L,
+            AgentName: "Agente de Aquisição",
             TenantId: "tenant_a",
             Complexity: ActivityComplexity.Planning,
             SystemPrompt: "Você é o Agente de Aquisição.",
@@ -54,13 +55,14 @@ public class AgentRuntimeServiceTests
         var service = new AgentRuntimeService(fakeClient, CreateRouter(), costLogger);
 
         await service.ExecuteAsync(new AgentRuntimeRequest(
-            TaskId: "task_42",
+            TaskId: 42L,
+            AgentName: "tenant_b",
             TenantId: "tenant_b",
             Complexity: ActivityComplexity.Repetitive,
             SystemPrompt: "system",
             UserMessage: "user"));
 
-        var totalTokens = await costLogger.GetAccumulatedTokensForTaskAsync("task_42");
+        var totalTokens = await costLogger.GetAccumulatedTokensForTaskAsync(42L);
         Assert.Equal(70, totalTokens); // 50 + 20
     }
 
@@ -81,7 +83,7 @@ public class AgentRuntimeServiceTests
         var service = new AgentRuntimeService(fakeClient, CreateRouter(), new InMemoryCostLogger());
 
         var result = await service.ExecuteAsync(new AgentRuntimeRequest(
-            TaskId: "task_1", TenantId: "tenant_a", Complexity: ActivityComplexity.Planning,
+            TaskId: 1L, AgentName: "tenant_a", TenantId: "tenant_a", Complexity: ActivityComplexity.Planning,
             SystemPrompt: "s", UserMessage: "u"));
 
         Assert.Equal("Parte um. Parte dois.", result.Text);
@@ -97,12 +99,13 @@ public class AgentRuntimeServiceTests
         var costLogger = new InMemoryCostLogger();
         var service = new AgentRuntimeService(fakeClient, CreateRouter(), costLogger);
 
+        var taskFalha = 123L;
         await Assert.ThrowsAsync<AnthropicApiException>(() => service.ExecuteAsync(
             new AgentRuntimeRequest(
-                TaskId: "task_falha", TenantId: "tenant_a", Complexity: ActivityComplexity.Planning,
+                TaskId: taskFalha, AgentName: "tenant_a", TenantId: "tenant_a", Complexity: ActivityComplexity.Planning,
                 SystemPrompt: "s", UserMessage: "u")));
 
-        var total = await costLogger.GetAccumulatedTokensForTaskAsync("task_falha");
+        var total = await costLogger.GetAccumulatedTokensForTaskAsync(taskFalha);
         Assert.Equal(0, total);
     }
 
