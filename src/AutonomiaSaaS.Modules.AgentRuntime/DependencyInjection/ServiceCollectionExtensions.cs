@@ -49,7 +49,13 @@ public static class ServiceCollectionExtensions
             httpClient.DefaultRequestHeaders.Add("anthropic-version", options.ApiVersion);
         });
 
-        services.AddScoped<IIndexProvider, CostLogEntryIndexProvider>();
+        // CORRIGIDO: IIndexProvider precisa ser Singleton, nunca Scoped — ver o mesmo aviso aplicado ao
+        // módulo do cofre (CredentialVault/Startup.cs). Registrar como Scoped quebra a criação do shell
+        // do tenant com "Cannot resolve scoped service 'IEnumerable<IIndexProvider>' from root provider"
+        // (issue #7847 do próprio OrchardCMS/OrchardCore) — o AddDataAccess() do Orchard Core resolve
+        // isso a partir do container raiz, não de um escopo de request.
+        services.AddSingleton<IIndexProvider, CostLogEntryIndexProvider>();
+
         services.AddScoped<ICostLogEntryStore, YesSqlCostLogEntryStore>();
         services.AddSingleton<IModelPricingProvider, StaticModelPricingCatalog>();
 

@@ -15,7 +15,15 @@ public sealed class Startup : StartupBase
     {
         // IDataProtectionProvider já é registrado pelo host ASP.NET Core / Orchard Core —
         // não precisamos (e não deveríamos) registrar isso aqui, só consumir via DI.
-        services.AddScoped<IIndexProvider, AgentCredentialIndexProvider>();
+
+        // CORRIGIDO: IIndexProvider precisa ser Singleton, nunca Scoped. O AddDataAccess() do
+        // Orchard Core resolve IEnumerable<IIndexProvider> a partir do container RAIZ, na
+        // criação do shell do tenant — não de um escopo de request. Registrar como Scoped
+        // quebra com "Cannot resolve scoped service 'IEnumerable<IIndexProvider>' from root
+        // provider" (mesmo erro documentado na issue #7847 do próprio OrchardCMS/OrchardCore).
+        // A suposição anterior de que existiria um `services.AddIndexProvider<T>()` pronto
+        // estava sinalizada como não confirmada — use este registro explícito no lugar dela.
+        services.AddSingleton<IIndexProvider, AgentCredentialIndexProvider>();
 
         services.AddScoped<IAgentCredentialRecordStore, YesSqlAgentCredentialRecordStore>();
         services.AddScoped<ICredentialVault, DataProtectionCredentialVault>();

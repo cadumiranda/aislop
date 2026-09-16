@@ -39,5 +39,8 @@
   <ItemGroup>
     <ProjectReference Include="..\AutonomiaSaaS.Modules.BusinessCore\AutonomiaSaaS.Modules.BusinessCore.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="BackgroundTasks\" />
+  </ItemGroup>
 
 </Project>

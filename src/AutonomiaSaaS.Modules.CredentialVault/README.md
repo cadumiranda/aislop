@@ -43,9 +43,14 @@ Só tenho a spec e os documentos de arquitetura, não o `AutonomiaSaaS.Modules.B
 Duas coisas específicas deste módulo que dependem de convenção do Orchard Core e não pude
 validar contra o `.sln` real:
 
-- **Registro de `IIndexProvider`** — assumi `services.AddIndexProvider<AgentCredentialIndexProvider>()`
-  como a chamada correta (é a convenção usada por outros módulos Orchard Core que geram índice
-  próprio). Confirme contra o padrão real usado por `AgentTaskPartIndex` no `BusinessCore`.
+- **Registro de `IIndexProvider`** — ~~assumi `services.AddIndexProvider<AgentCredentialIndexProvider>()`~~
+  **CORRIGIDO** após erro reportado em produção: `IIndexProvider` precisa ser registrado como
+  `services.AddSingleton<IIndexProvider, AgentCredentialIndexProvider>()`, nunca `Scoped`. O
+  `AddDataAccess()` do Orchard Core resolve `IEnumerable<IIndexProvider>` a partir do container
+  raiz durante a criação do shell do tenant, não de um escopo por request — registrar como Scoped
+  quebra com `Cannot resolve scoped service 'IEnumerable<IIndexProvider>' from root provider`
+  (mesmo erro documentado na issue #7847 do próprio OrchardCMS/OrchardCore). `Startup.cs` já
+  reflete a correção.
 - **Descoberta de `DataMigration`** — Orchard Core normalmente descobre classes `DataMigration`
   por convenção dentro do módulo, sem registro explícito em `Startup.cs`. Não adicionei nenhuma
   chamada de registro para a migration por causa disso — se o projeto real usa um padrão
@@ -61,5 +66,37 @@ validar contra o `.sln` real:
 - Não gerencia rotação de chave mestra de Data Protection em si (isso é infraestrutura do host,
   já coberta pela seção "Distributed Data Protection" da documentação — Redis ou Azure Blob
   Storage quando escalar para múltiplas instâncias).
-- Não expõe UI de admin para cadastrar credenciais — só a API (`ICredentialVault`). Se quiser uma
-  tela, é uma camada fina de Controller por cima disto, não uma mudança no vault em si.
+
+## Atualização: UI de admin para gravar/rotacionar/revogar (canal de escrita)
+
+Decidi por UI de admin em vez de script de seed/CLI — motivo: não tenho acesso ao `Program.cs`
+real do host pra saber a convenção de comando customizado, e uma tela de admin é mais fácil de
+auditar (quem gravou o quê, quando) sem depender de acesso a terminal do servidor.
+
+**O princípio de design é write-only.** Nenhuma action do `AgentCredentialsAdminController`
+jamais devolve um valor de credencial pra view — a listagem (`Index`) mostra só metadados
+(`CredentialSummary`, que estruturalmente não carrega valor nenhum), e "Rotacionar" reusa o
+formulário de criação com o campo de valor sempre em branco, nunca pré-populado com o valor
+antigo.
+
+**Peças adicionadas:**
+- `ICredentialVault.ListAsync()` + `CredentialSummary` — novo método na interface pública do
+  cofre, implementado via um novo `IAgentCredentialRecordStore.ListAllAsync()`.
+- `Permissions`/`CredentialVaultPermissions.ManageAgentCredentials` — permissão dedicada, não
+  reaproveitei uma permissão genérica de Administrator, pra poder delegar isso a um papel mais
+  restrito no futuro sem tocar em código.
+- `AdminMenu` — item de menu sob um grupo "AutonomiaSaaS" no admin.
+- `AgentCredentialsAdminController` + Views (`Index.cshtml`, `Create.cshtml`) — cada action
+  verifica a permissão via `IAuthorizationService`, não só confia no atributo de rota `[Admin]`.
+
+**Assunções específicas desta parte, a verificar contra o projeto real:**
+- O valor de `area` usado nos links (`"AutonomiaSaaS.Modules.CredentialVault"`) presume que o
+  Orchard Core usa o nome do assembly do módulo como Area de roteamento — confirme isso contra
+  como os outros controllers do projeto (ex: `ApprovalController` do RiskGate) são referenciados.
+- Não usei um helper de versão específica (`NavigationHelper.IsAdminMenu`) na checagem do nome
+  do menu em `AdminMenu.BuildNavigationAsync` — usei a comparação direta de string `"admin"`,
+  que é válida em qualquer versão, mas pode não ser exatamente a convenção que o resto do
+  projeto usa.
+- Adicionei `<AddRazorSupportForMvc>true</AddRazorSupportForMvc>` ao `.csproj` — é a convenção
+  padrão do Orchard Core para módulos com Views Razor numa class library; confirme que o padrão
+  real do projeto não usa algo diferente (ex: Razor Class Library / RCL separada).
