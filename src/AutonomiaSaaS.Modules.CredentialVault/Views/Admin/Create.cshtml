@@ -1,0 +1,48 @@
+@model AutonomiaSaaS.Modules.CredentialVault.Admin.ViewModels.AgentCredentialEditViewModel
+@{
+    ViewData["Title"] = Model.IsRotation ? "Rotacionar credencial" : "Nova credencial";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (Model.IsRotation)
+{
+    <p class="text-muted">
+        Você está sobrescrevendo o valor de <code>@Model.AgentName / @Model.Key</code>.
+        O valor anterior será substituído imediatamente e não pode ser recuperado depois.
+    </p>
+}
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="IsRotation" />
+
+    <div class="mb-3">
+        <label asp-for="AgentName" class="form-label"></label>
+        <input asp-for="AgentName" class="form-control" readonly="@Model.IsRotation" />
+        <span asp-validation-for="AgentName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Key" class="form-label"></label>
+        <input asp-for="Key" class="form-control" readonly="@Model.IsRotation" />
+        <span asp-validation-for="Key" class="text-danger"></span>
+        <div class="form-text">Identificador que o código usa para buscar esta credencial (ex: "vercel_deploy_token").</div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Value" class="form-label"></label>
+        <input asp-for="Value" class="form-control" autocomplete="off" />
+        <span asp-validation-for="Value" class="text-danger"></span>
+        <div class="form-text">Nunca será exibido novamente depois de salvo.</div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <input asp-for="Description" class="form-control" />
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salvar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

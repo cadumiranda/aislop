@@ -25,6 +25,7 @@
          início (AgentRuntime -> BusinessCore -> RiskGate -> AcquisitionAgent). -->
     <ProjectReference Include="..\AutonomiaSaaS.Modules.AgentRuntime\AutonomiaSaaS.Modules.AgentRuntime.csproj" />
     <ProjectReference Include="..\AutonomiaSaaS.Modules.BusinessCore\AutonomiaSaaS.Modules.BusinessCore.csproj" />
+    <ProjectReference Include="..\AutonomiaSaaS.Modules.CredentialVault\AutonomiaSaaS.Modules.CredentialVault.csproj" />
     <ProjectReference Include="..\AutonomiaSaaS.Modules.RiskGate\AutonomiaSaaS.Modules.RiskGate.csproj" />
   </ItemGroup>
 

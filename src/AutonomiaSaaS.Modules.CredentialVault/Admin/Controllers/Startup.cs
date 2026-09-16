@@ -6,7 +6,6 @@ using OrchardCore.Data;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using YesSql.Indexes;
 
 namespace AutonomiaSaaS.Modules.CredentialVault;
 
@@ -16,7 +15,7 @@ public sealed class Startup : StartupBase
     {
         // IDataProtectionProvider já é registrado pelo host ASP.NET Core / Orchard Core —
         // não precisamos (e não deveríamos) registrar isso aqui, só consumir via DI.
-        services.AddScoped<IIndexProvider, AgentCredentialIndexProvider>();
+        services.AddIndexProvider<AgentCredentialIndexProvider>();
 
         services.AddScoped<IAgentCredentialRecordStore, YesSqlAgentCredentialRecordStore>();
         services.AddScoped<ICredentialVault, DataProtectionCredentialVault>();

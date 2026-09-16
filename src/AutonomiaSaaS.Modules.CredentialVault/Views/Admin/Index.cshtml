@@ -1,0 +1,61 @@
+@model AutonomiaSaaS.Modules.CredentialVault.Admin.ViewModels.AgentCredentialListViewModel
+@{
+    // Layout do Admin é herdado automaticamente pelo _ViewImports/_ViewStart do Orchard Core —
+    // não referenciei um Layout explícito aqui de propósito, para herdar o tema real do admin
+    // em vez de assumir uma estrutura que eu não pude confirmar.
+    ViewData["Title"] = "Cofre de Credenciais";
+}
+
+<h1>Cofre de Credenciais</h1>
+
+<p class="text-muted">
+    Os valores nunca são exibidos depois de gravados. Para trocar uma credencial, use
+    "Rotacionar" — isso sobrescreve o valor anterior.
+</p>
+
+<a asp-action="Create" class="btn btn-primary mb-3">Nova credencial</a>
+
+@if (!Model.Credentials.Any())
+{
+    <p>Nenhuma credencial cadastrada ainda.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Agente</th>
+                <th>Chave</th>
+                <th>Descrição</th>
+                <th>Criada em</th>
+                <th>Última rotação</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var credential in Model.Credentials)
+            {
+                <tr>
+                    <td>@credential.AgentName</td>
+                    <td><code>@credential.Key</code></td>
+                    <td>@credential.Description</td>
+                    <td>@credential.CreatedUtc.ToString("g")</td>
+                    <td>@(credential.RotatedUtc?.ToString("g") ?? "—")</td>
+                    <td class="text-end">
+                        <a asp-action="Rotate"
+                           asp-route-agentName="@credential.AgentName"
+                           asp-route-key="@credential.Key"
+                           class="btn btn-sm btn-outline-secondary">Rotacionar</a>
+
+                        <form asp-action="Revoke" method="post" class="d-inline"
+                              onsubmit="return confirm('Revogar esta credencial? Qualquer agente que a use vai parar de funcionar imediatamente.');">
+                            <input type="hidden" name="agentName" value="@credential.AgentName" />
+                            <input type="hidden" name="key" value="@credential.Key" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Revogar</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
