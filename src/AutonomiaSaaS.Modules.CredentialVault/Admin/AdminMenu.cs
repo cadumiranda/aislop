@@ -12,14 +12,11 @@ public sealed class AdminMenu : INavigationProvider
         S = localizer;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
     {
-        // Padrão comum em módulos Orchard Core para restringir a construção ao menu "admin" —
-        // não usei um helper específico de versão porque não pude confirmar sua existência
-        // exata na versão real do projeto; esta comparação direta é sempre válida.
         if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
         {
-            return Task.CompletedTask;
+            return default;
         }
 
         builder
@@ -29,6 +26,6 @@ public sealed class AdminMenu : INavigationProvider
                     .Permission(CredentialVaultPermissions.ManageAgentCredentials)
                     .LocalNav()));
 
-        return Task.CompletedTask;
+        return default;
     }
 }

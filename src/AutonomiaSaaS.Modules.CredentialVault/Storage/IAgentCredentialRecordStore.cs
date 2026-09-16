@@ -9,6 +9,7 @@ namespace AutonomiaSaaS.Modules.CredentialVault.Storage;
 public interface IAgentCredentialRecordStore
 {
     Task<AgentCredentialRecord?> FindAsync(string agentName, string key, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<AgentCredentialRecord>> ListAllAsync(CancellationToken cancellationToken = default);
     Task SaveAsync(AgentCredentialRecord record, CancellationToken cancellationToken = default);
     Task DeleteAsync(AgentCredentialRecord record, CancellationToken cancellationToken = default);
 }

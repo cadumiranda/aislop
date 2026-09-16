@@ -108,6 +108,24 @@ public sealed class DataProtectionCredentialVault : ICredentialVault
         _logger.LogInformation("Credencial revogada: {AgentName}/{Key}.", agentName, key);
     }
 
+    public async Task<IReadOnlyList<CredentialSummary>> ListAsync(CancellationToken cancellationToken = default)
+    {
+        var records = await _recordStore.ListAllAsync(cancellationToken);
+        // Mapeamento explícito campo a campo — nunca repassar o objeto inteiro, exatamente para
+        // que ProtectedValue não vaze por acidente numa refatoração futura que troque este
+        // record por outro com mais campos.
+        return records
+            .Select(r => new CredentialSummary
+            {
+                AgentName = r.AgentName,
+                Key = r.Key,
+                Description = r.Description,
+                CreatedUtc = r.CreatedUtc,
+                RotatedUtc = r.RotatedUtc,
+            })
+            .ToList();
+    }
+
     /// <summary>
     /// Um protetor por agente (subPurpose = agentName) — a credencial só é decifrável no
     /// contexto do agente para o qual foi gravada. Ver README, seção "purpose por agente".

@@ -2,7 +2,6 @@ using AutonomiaSaaS.Modules.CredentialVault.Abstractions;
 using AutonomiaSaaS.Modules.CredentialVault.Admin;
 using AutonomiaSaaS.Modules.CredentialVault.Storage;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Data;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;

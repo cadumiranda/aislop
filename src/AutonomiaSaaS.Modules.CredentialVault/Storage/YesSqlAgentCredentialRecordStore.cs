@@ -21,6 +21,9 @@ public sealed class YesSqlAgentCredentialRecordStore : IAgentCredentialRecordSto
                 index => index.AgentName == agentName && index.Key == key)
             .FirstOrDefaultAsync();
 
+    public async Task<IReadOnlyList<AgentCredentialRecord>> ListAllAsync(CancellationToken cancellationToken = default)
+        => (await _session.Query<AgentCredentialRecord>().ListAsync()).ToList();
+
     public Task SaveAsync(AgentCredentialRecord record, CancellationToken cancellationToken = default)
     {
         // NOTA: algumas versões de YesSql expõem SaveAsync(object, CancellationToken) — se o
