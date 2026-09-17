@@ -1,6 +1,6 @@
 using AutonomiaSaaS.Modules.AgentRuntime.ModelRouting;
 
-namespace AutonomiaSaaS.Modules.AgentRuntime.Cost;
+namespace AutonomiaSaaS.Modules.AgentRuntime.CostLogger;
 
 /// <summary>
 /// Um registro de custo de uma única chamada ao modelo. TaskId referencia

@@ -1,4 +1,3 @@
-using AutonomiaSaaS.Modules.AgentRuntime.Cost;
 using AutonomiaSaaS.Modules.AgentRuntime.CostLogger.Storage;
 using AutonomiaSaaS.Modules.AgentRuntime.ModelRouting;
 using AutonomiaSaaS.Modules.AgentRuntime.Pricing;
@@ -114,6 +113,66 @@ public sealed class PersistentCostLoggerTests
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => logger.LogAsync(
             MakeEntry(1L, inputTokens: 100, outputTokens: 100, model: "modelo-desconhecido")));
+    }
+
+    [Fact]
+    public async Task GetAccumulatedTokensForTaskAsync_SumsInputAndOutputTokens_AcrossEntries()
+    {
+        var store = new FakeCostLogEntryStore();
+        var logger = CreateLogger(store);
+
+        await logger.LogAsync(MakeEntry(1, inputTokens: 1_000, outputTokens: 500));
+        await logger.LogAsync(MakeEntry(1, inputTokens: 2_000, outputTokens: 250));
+
+        var totalTokens = await logger.GetAccumulatedTokensForTaskAsync(1);
+
+        Assert.Equal(3_750, totalTokens); // (1000+500) + (2000+250)
+    }
+
+    [Fact]
+    public async Task GetAccumulatedTokensForTaskAsync_DoesNotIncludeEntries_FromOtherTasks()
+    {
+        var store = new FakeCostLogEntryStore();
+        var logger = CreateLogger(store);
+
+        await logger.LogAsync(MakeEntry(1, inputTokens: 1_000, outputTokens: 0));
+        await logger.LogAsync(MakeEntry(2, inputTokens: 5_000, outputTokens: 0));
+
+        var totalTask1 = await logger.GetAccumulatedTokensForTaskAsync(1);
+
+        Assert.Equal(1_000, totalTask1);
+    }
+
+    [Fact]
+    public async Task GetAccumulatedTokensForTaskAsync_ReturnsZero_WhenTaskHasNoEntries()
+    {
+        var store = new FakeCostLogEntryStore();
+        var logger = CreateLogger(store);
+
+        var total = await logger.GetAccumulatedTokensForTaskAsync(999);
+
+        Assert.Equal(0, total);
+    }
+
+    [Fact]
+    public async Task GetAccumulatedTokensForTaskAsync_IsUnaffectedByPricing_UnlikeGetTotalCostForTaskAsync()
+    {
+        // Mesmo com um modelo caríssimo, a contagem de tokens não muda — a diferença entre os
+        // dois métodos é exatamente essa: um passa pelo catálogo de preços, o outro não.
+        var store = new FakeCostLogEntryStore();
+        var expensivePricing = new StaticModelPricingCatalog(new Dictionary<string, ModelRate>
+        {
+            ["test-model"] = new ModelRate { InputPerMillionTokens = 1000m, OutputPerMillionTokens = 5000m },
+        });
+        var logger = CreateLogger(store, expensivePricing);
+
+        await logger.LogAsync(MakeEntry(1, inputTokens: 1_000, outputTokens: 1_000));
+
+        var tokens = await logger.GetAccumulatedTokensForTaskAsync(1);
+        var cost = await logger.GetTotalCostForTaskAsync(1);
+
+        Assert.Equal(2_000, tokens);
+        Assert.True(cost > 0); // o preço caro se reflete no custo, não na contagem de tokens
     }
 
     private static ModelCallCost MakeEntry(

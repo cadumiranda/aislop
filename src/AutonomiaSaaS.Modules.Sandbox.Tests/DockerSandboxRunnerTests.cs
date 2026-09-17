@@ -68,7 +68,7 @@ public sealed class DockerSandboxRunnerTests : IDisposable
 
         var request = new SandboxExecutionRequest
         {
-            TaskId = "t-1",
+            TaskId = 1L,
             AgentName = "product_agent",
             Image = "autonomiasaas/agent-sandbox-node:latest",
             Command = new[] { "npm", "run", "build" },
@@ -95,7 +95,7 @@ public sealed class DockerSandboxRunnerTests : IDisposable
 
         var request = new SandboxExecutionRequest
         {
-            TaskId = "t",
+            TaskId = 1L,
             AgentName = "product_agent",
             Image = "img",
             Command = new[] { "true" },
@@ -122,7 +122,7 @@ public sealed class DockerSandboxRunnerTests : IDisposable
 
         var request = new SandboxExecutionRequest
         {
-            TaskId = "t-2",
+            TaskId = 2L,
             AgentName = "product_agent",
             Image = "img",
             Command = new[] { "true" },
@@ -173,7 +173,7 @@ public sealed class DockerSandboxRunnerTests : IDisposable
 
         var request = new SandboxExecutionRequest
         {
-            TaskId = "t-3",
+            TaskId = 3L,
             AgentName = "product_agent",
             Image = "img",
             Command = new[] { "cat", "input.txt" },
@@ -196,7 +196,7 @@ public sealed class DockerSandboxRunnerTests : IDisposable
 
         var request = new SandboxExecutionRequest
         {
-            TaskId = "t-4",
+            TaskId = 4L,
             AgentName = "product_agent",
             Image = "img",
             Command = new[] { "true" },
@@ -219,7 +219,7 @@ public sealed class DockerSandboxRunnerTests : IDisposable
 
         var result = await runner.RunAsync(new SandboxExecutionRequest
         {
-            TaskId = "t-5",
+            TaskId = 5L,
             AgentName = "product_agent",
             Image = "img",
             Command = new[] { "npm", "run", "build" },
@@ -241,7 +241,7 @@ public sealed class DockerSandboxRunnerTests : IDisposable
 
         var result = await runner.RunAsync(new SandboxExecutionRequest
         {
-            TaskId = "t-6",
+            TaskId = 6L,
             AgentName = "product_agent",
             Image = "img",
             Command = new[] { "sleep", "999" },
@@ -263,7 +263,7 @@ public sealed class DockerSandboxRunnerTests : IDisposable
 
         var request = new SandboxExecutionRequest
         {
-            TaskId = "t-7",
+            TaskId = 7L,
             AgentName = "product_agent",
             Image = "img",
             Command = new[] { "true" },

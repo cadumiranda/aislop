@@ -42,14 +42,14 @@ public sealed class DockerSandboxRunner : ISandboxRunner
         SandboxExecutionRequest request,
         CancellationToken cancellationToken = default)
     {
-        var workspacePath = Path.Combine(_options.WorkspaceRootPath, SanitizeForPath(request.TaskId));
+        var workspacePath = Path.Combine(_options.WorkspaceRootPath, request.TaskId.ToString());
         Directory.CreateDirectory(workspacePath);
 
         try
         {
             await MaterializeInputFilesAsync(workspacePath, request.InputFiles, cancellationToken);
 
-            var rawContainerName = $"asaas-sbx-{SanitizeForPath(request.TaskId)}-{Guid.NewGuid():N}";
+            var rawContainerName = $"asaas-sbx-{request.TaskId}-{Guid.NewGuid():N}";
             var containerName = rawContainerName.Length > 60 ? rawContainerName.Substring(0, 60) : rawContainerName;
             var arguments = BuildDockerRunArguments(request, workspacePath, containerName);
 

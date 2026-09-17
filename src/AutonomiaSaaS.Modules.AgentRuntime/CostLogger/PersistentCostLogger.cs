@@ -1,4 +1,3 @@
-using AutonomiaSaaS.Modules.AgentRuntime.Cost;
 using AutonomiaSaaS.Modules.AgentRuntime.CostLogger.Storage;
 using AutonomiaSaaS.Modules.AgentRuntime.Pricing;
 
@@ -58,8 +57,15 @@ public sealed class PersistentCostLogger : ICostLogger
         return inputCost + outputCost;
     }
 
-    public Task<long> GetAccumulatedTokensForTaskAsync(long taskId, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// [NOVO] Soma bruta de tokens (input + output) das chamadas registradas para uma tarefa —
+    /// sem passar por IModelPricingProvider. Reaproveita o mesmo FindByTaskAsync que
+    /// GetTotalCostForTaskAsync usa; a diferença é só o que se soma a partir do mesmo conjunto
+    /// de registros, não uma consulta nova.
+    /// </summary>
+    public async Task<long> GetAccumulatedTokensForTaskAsync(long taskId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var entries = await _store.FindByTaskAsync(taskId, cancellationToken);
+        return entries.Sum(e => e.InputTokens + e.OutputTokens);
     }
 }

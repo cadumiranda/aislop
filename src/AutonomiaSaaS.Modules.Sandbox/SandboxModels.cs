@@ -15,7 +15,7 @@ namespace AutonomiaSaaS.Modules.Sandbox.Abstractions;
 public sealed record SandboxExecutionRequest
 {
     /// <summary>Identificador da AgentTask (ou equivalente) que originou esta execução — para correlação nos logs.</summary>
-    public required string TaskId { get; init; }
+    public required long TaskId { get; init; }
 
     /// <summary>Nome do agente dono da execução (ex: "product_agent"). Usado para escolher a imagem certa por domínio.</summary>
     public required string AgentName { get; init; }
@@ -56,7 +56,7 @@ public sealed record SandboxResourceLimits
 
 public sealed record SandboxExecutionResult
 {
-    public required string TaskId { get; init; }
+    public required long TaskId { get; init; }
     public required bool Succeeded { get; init; }
     public int ExitCode { get; init; }
     public string StandardOutput { get; init; } = string.Empty;

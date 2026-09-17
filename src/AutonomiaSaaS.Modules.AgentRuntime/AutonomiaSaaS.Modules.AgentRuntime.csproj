@@ -21,7 +21,15 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.11" />
     <PackageReference Include="OrchardCore.Module.Targets" Version="3.0.1" />
     <PackageReference Include="OrchardCore.Data" Version="3.0.1" />
-    <PackageReference Include="YesSql.Abstractions" Version="5.1.0" />
+    <PackageReference Include="YesSql.Abstractions" Version="5.4.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AutonomiaSaaS.Modules.CredentialVault\AutonomiaSaaS.Modules.CredentialVault.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Cost\" />
   </ItemGroup>
 
 </Project>

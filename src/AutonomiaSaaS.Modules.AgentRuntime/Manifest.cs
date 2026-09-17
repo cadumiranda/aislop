@@ -7,5 +7,6 @@ using OrchardCore.Modules.Manifest;
     Version = "0.1.0",
     Description = "Camada de chamada ao modelo (API da Anthropic), roteamento por complexidade e " +
                   "registro de custo (seção 8 do documento de arquitetura).",
-    Category = "Autonomia SaaS"
+    Category = "Autonomia SaaS",
+    Dependencies = new[] { "OrchardCore.Contents", "AutonomiaSaaS.Modules.CredentialVault" }
 )]

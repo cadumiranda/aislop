@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace AutonomiaSaaS.Modules.AgentRuntime.Cost;
+namespace AutonomiaSaaS.Modules.AgentRuntime.CostLogger;
 
 /// <summary>
 /// Implementação em memória, pensada para testes unitários e para rodar a
