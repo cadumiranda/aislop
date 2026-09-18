@@ -1,6 +1,7 @@
 using AutonomiaSaaS.Modules.AgentRuntime.CostLogger;
 using AutonomiaSaaS.Modules.AgentRuntime.ModelRouting;
 using AutonomiaSaaS.Modules.AgentRuntime.Models;
+using AutonomiaSaaS.Modules.AgentRuntime.Pricing;
 using Microsoft.Extensions.Options;
 using Xunit;
 
@@ -24,7 +25,14 @@ public class AgentRuntimeServiceTests
             Usage: new AnthropicUsage(200, 80),
             StopReason: "end_turn");
         var fakeClient = new FakeAnthropicClient(fakeResponse);
-        var costLogger = new InMemoryCostLogger();
+
+
+        var expensivePricing = new StaticModelPricingCatalog(new Dictionary<string, ModelRate>
+        {
+            ["test-model"] = new ModelRate { InputPerMillionTokens = 1000m, OutputPerMillionTokens = 5000m },
+        });
+        var costLogger = new InMemoryCostLogger(expensivePricing);
+
         var service = new AgentRuntimeService(fakeClient, CreateRouter(), costLogger);
 
         var result = await service.ExecuteAsync(new AgentRuntimeRequest(
@@ -51,7 +59,11 @@ public class AgentRuntimeServiceTests
             Usage: new AnthropicUsage(50, 20),
             StopReason: "end_turn");
         var fakeClient = new FakeAnthropicClient(fakeResponse);
-        var costLogger = new InMemoryCostLogger();
+        var expensivePricing = new StaticModelPricingCatalog(new Dictionary<string, ModelRate>
+        {
+            ["test-model"] = new ModelRate { InputPerMillionTokens = 1000m, OutputPerMillionTokens = 5000m },
+        });
+        var costLogger = new InMemoryCostLogger(expensivePricing);
         var service = new AgentRuntimeService(fakeClient, CreateRouter(), costLogger);
 
         await service.ExecuteAsync(new AgentRuntimeRequest(
@@ -80,7 +92,14 @@ public class AgentRuntimeServiceTests
             Usage: new AnthropicUsage(10, 10),
             StopReason: "end_turn");
         var fakeClient = new FakeAnthropicClient(fakeResponse);
-        var service = new AgentRuntimeService(fakeClient, CreateRouter(), new InMemoryCostLogger());
+
+        var expensivePricing = new StaticModelPricingCatalog(new Dictionary<string, ModelRate>
+        {
+            ["test-model"] = new ModelRate { InputPerMillionTokens = 1000m, OutputPerMillionTokens = 5000m },
+        });
+        var costLogger = new InMemoryCostLogger(expensivePricing);
+
+        var service = new AgentRuntimeService(fakeClient, CreateRouter(), costLogger);
 
         var result = await service.ExecuteAsync(new AgentRuntimeRequest(
             TaskId: 1L, AgentName: "tenant_a", TenantId: "tenant_a", Complexity: ActivityComplexity.Planning,
@@ -96,7 +115,13 @@ public class AgentRuntimeServiceTests
         // uso de tokens, não deve existir registro de custo para essa tarefa —
         // evita contabilizar uma chamada que nunca completou.
         var fakeClient = new ThrowingAnthropicClient();
-        var costLogger = new InMemoryCostLogger();
+
+        var expensivePricing = new StaticModelPricingCatalog(new Dictionary<string, ModelRate>
+        {
+            ["test-model"] = new ModelRate { InputPerMillionTokens = 1000m, OutputPerMillionTokens = 5000m },
+        });
+        var costLogger = new InMemoryCostLogger(expensivePricing);
+
         var service = new AgentRuntimeService(fakeClient, CreateRouter(), costLogger);
 
         var taskFalha = 123L;

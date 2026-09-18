@@ -37,12 +37,25 @@ public sealed class PersistentCostLogger : ICostLogger
         await _store.AddAsync(record, cancellationToken);
     }
 
+    /// <summary>
+    /// Soma de custo (USD) de todas as chamadas de modelo registradas para uma tarefa específica.
+    /// </summary>
+    /// <param name="taskId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async Task<decimal> GetTotalCostForTaskAsync(long taskId, CancellationToken cancellationToken = default)
     {
         var entries = await _store.FindByTaskAsync(taskId, cancellationToken);
         return entries.Sum(e => e.EstimatedCostUsd);
     }
 
+    /// <summary>
+    /// Soma de custo (USD) de um agente desde uma data — para o teto "por ciclo do orquestrador" (arquitetura, seção 8).
+    /// </summary>
+    /// <param name="agentName"></param>
+    /// <param name="since"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async Task<decimal> GetTotalCostSinceAsync(string agentName, DateTimeOffset since, CancellationToken cancellationToken = default)
     {
         var entries = await _store.FindByAgentSinceAsync(agentName, since, cancellationToken);

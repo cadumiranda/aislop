@@ -130,7 +130,7 @@ public sealed class ApprovalController : Controller
             // ContentItemId vem do ContentItem que é dono da part — ver
             // aviso no README sobre esta linha ser a que tenho menos certeza
             // de estar correta sem compilar contra o Orchard Core real.
-            TaskId = part.ContentItem.ContentItemId,
+            TaskId = part.ContentItem.Id,
             AgentName = part.AgentName,
             Action = part.Action,
             EstimatedCostTokens = part.EstimatedCostTokens,

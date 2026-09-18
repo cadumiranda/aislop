@@ -10,7 +10,7 @@ namespace AutonomiaSaaS.Modules.RiskGate.ViewModels;
 /// </summary>
 public sealed class PendingApprovalItemViewModel
 {
-    public required string TaskId { get; init; }
+    public required long TaskId { get; init; }
     public required string AgentName { get; init; }
     public required string Action { get; init; }
     public required long EstimatedCostTokens { get; init; }

@@ -1,5 +1,7 @@
 using AutonomiaSaaS.Modules.AgentRuntime.CostLogger;
 using AutonomiaSaaS.Modules.AgentRuntime.ModelRouting;
+using AutonomiaSaaS.Modules.AgentRuntime.Pricing;
+using Moq;
 using Xunit;
 
 namespace AutonomiaSaaS.Modules.AgentRuntime.Tests;
@@ -9,7 +11,8 @@ public class InMemoryCostLoggerTests
     [Fact]
     public async Task LogAsync_ChamadasMultiplasMesmaTarefa_AcumulaTokens()
     {
-        var logger = new InMemoryCostLogger();
+        var pricingProvider = Mock.Of<IModelPricingProvider>();
+        var logger = new InMemoryCostLogger(pricingProvider);
         var agora = DateTimeOffset.UtcNow;
 
         await logger.LogAsync(new ModelCallCost(1L, "tenant_a", "tenant_a", "claude-sonnet-5", ActivityComplexity.Planning, 100, 50, agora));
@@ -23,7 +26,8 @@ public class InMemoryCostLoggerTests
     [Fact]
     public async Task GetAccumulatedTokensForTaskAsync_TarefaDiferente_NaoMisturaCustos()
     {
-        var logger = new InMemoryCostLogger();
+        var pricingProvider = Mock.Of<IModelPricingProvider>();
+        var logger = new InMemoryCostLogger(pricingProvider);
         var agora = DateTimeOffset.UtcNow;
 
         await logger.LogAsync(new ModelCallCost(1L, "tenant_a", "tenant_a", "claude-sonnet-5", ActivityComplexity.Planning, 100, 50, agora));
@@ -37,7 +41,8 @@ public class InMemoryCostLoggerTests
     [Fact]
     public async Task GetAccumulatedTokensForTaskAsync_TarefaSemRegistro_RetornaZero()
     {
-        var logger = new InMemoryCostLogger();
+        var pricingProvider = Mock.Of<IModelPricingProvider>();
+        var logger = new InMemoryCostLogger(pricingProvider);
 
         var total = await logger.GetAccumulatedTokensForTaskAsync(0L);
 

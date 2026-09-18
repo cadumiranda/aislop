@@ -28,7 +28,32 @@ public sealed record ModelCallCost(
 /// </summary>
 public interface ICostLogger
 {
+    /// <summary>
+    /// Registra o custo de uma chamada de modelo. A implementação real deve persistir
+    /// </summary>
+    /// <param name="cost"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     Task LogAsync(ModelCallCost cost, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Soma de custo (USD) de todas as chamadas de modelo registradas para uma tarefa específica.
+    /// </summary>
+    /// <param name="taskId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<decimal> GetTotalCostForTaskAsync(long taskId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Soma de custo (USD) de um agente desde uma data — para o teto "por ciclo do orquestrador" (arquitetura, seção 8).
+    /// </summary>
+    /// <param name="agentName"></param>
+    /// <param name="since"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<decimal> GetTotalCostSinceAsync(string agentName, DateTimeOffset since, CancellationToken cancellationToken = default);
+
+
 
     /// <summary>
     /// Soma de tokens (input + output) já gastos por uma tarefa específica.
