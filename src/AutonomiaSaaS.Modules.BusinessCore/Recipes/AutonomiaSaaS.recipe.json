@@ -1,0 +1,70 @@
+{
+  // Nome interno único do recipe — aparece na lista de "Recipes" (Configuration > Recipes) e,
+  // por causa de "issetuprecipe": true, também na tela de Setup do Orchard Core.
+  "name": "AutonomiaSaaS",
+  "displayName": "AutonomiaSaaS — Setup completo da solução",
+  "description": "Habilita todos os módulos do AutonomiaSaaS (AgentRuntime, BusinessCore, RiskGate, CredentialVault, Sandbox, AcquisitionAgent) e os recursos nativos do Orchard Core que a solução depende (Audit Trail, Notifications, Background Tasks).",
+  "author": "AutonomiaSaaS",
+  "website": "https://autonomiasaas.example",
+  "version": "1.0.0",
+  "issetuprecipe": true,
+  "categories": [ "autonomiasaas" ],
+  "tags": [ "autonomiasaas", "agentes", "setup" ],
+
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        // --- Recursos nativos do Orchard Core que a solução depende ---
+        "OrchardCore.Admin",
+        "OrchardCore.Contents",
+        "OrchardCore.Data",
+        "OrchardCore.Navigation",
+        "OrchardCore.Users",
+        "OrchardCore.Roles",
+        "OrchardCore.Recipes",
+        // [NOVO] Audit Trail — sem isso habilitado, IAuditTrailManager não está registrado e
+        // qualquer módulo que dependa dele (CredentialVault, RiskGate) falha ao iniciar.
+        "OrchardCore.AuditTrail",
+        // Notificação real de expiração de aprovação (RiskGate) depende destas duas.
+        "OrchardCore.Notifications",
+        "OrchardCore.Notifications.Email",
+
+        // --- Módulos do AutonomiaSaaS ---
+        // ATENÇÃO: os nomes abaixo assumem que o Id de cada módulo é igual ao nome do
+        // assembly/projeto (AutonomiaSaaS.Modules.X). Essa é exatamente a mesma incerteza que
+        // o README do repositório real já registra para o Manifest.cs do RiskGate ("não tenho
+        // certeza se o nome esperado aqui é o nome do assembly, o Id do módulo, ou algo
+        // definido no próprio Manifest.cs") — confirme contra o Id real de cada módulo (o
+        // atributo Id em [assembly: Module(...)], quando declarado explicitamente) antes de
+        // rodar isto contra um tenant de verdade. Se o recipe falhar silenciosamente em
+        // habilitar algum módulo, este é o primeiro lugar a checar.
+        "AutonomiaSaaS.Modules.AgentRuntime",
+        "AutonomiaSaaS.Modules.AgentRuntime.CostLogger",
+        "AutonomiaSaaS.Modules.BusinessCore",
+        "AutonomiaSaaS.Modules.RiskGate",
+        "AutonomiaSaaS.Modules.CredentialVault",
+        "AutonomiaSaaS.Modules.Sandbox",
+        "AutonomiaSaaS.Modules.AcquisitionAgent",
+        "AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment"
+      ],
+      "disable": []
+    },
+
+    // Retenção de 90 dias pro Audit Trail — evita crescimento indefinido da tabela, mas mantém
+    // histórico suficiente pra qualquer investigação de decisão de agente que não seja do
+    // último trimestre. Ajuste conforme a política de retenção real da empresa.
+    {
+      "name": "Settings",
+      "AuditTrailTrimmingSettings": {
+        "RetentionDays": 90,
+        "Disabled": false
+      }
+    }
+
+    // NÃO incluído de propósito, mesmo estando disponível como tipo de step: nenhuma criação de
+    // BusinessContext/AgentTask aqui. Esses são dados por tenant/cliente, não configuração de
+    // solução — pertencem a um fluxo de onboarding de cliente (ver conversa sobre
+    // Tenants/Recipes/AutoSetup para automação disso), não a este recipe de setup técnico.
+  ]
+}

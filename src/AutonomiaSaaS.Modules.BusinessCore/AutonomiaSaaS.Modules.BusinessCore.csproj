@@ -22,6 +22,10 @@
          correto será resolvido pela dependência OrchardCore.Data.Abstractions. -->
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AutonomiaSaaS.Modules.CredentialVault\AutonomiaSaaS.Modules.CredentialVault.csproj" />
+  </ItemGroup>
+
   <!-- BusinessCore não referencia AgentRuntime nem nenhum outro módulo de
        agente: Content Types e a máquina de estados da tarefa não precisam
        saber como uma chamada de modelo é feita. Isso mantém a dependência

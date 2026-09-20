@@ -9,5 +9,5 @@ using OrchardCore.Modules.Manifest;
                   "tenant) e o portão único de proposta de ação para agentes (seção 4 do documento " +
                   "de arquitetura).",
     Category = "Autonomia SaaS",
-    Dependencies = new[] { "OrchardCore.Contents", "AutonomiaSaaS.Modules.BusinessCore" }
+    Dependencies = new[] { "OrchardCore.Admin", "OrchardCore.AuditTrail", "OrchardCore.BackgroundTasks", "OrchardCore.Navigation", "OrchardCore.Notifications", "OrchardCore.Users", "AutonomiaSaaS.Modules.BusinessCore" }
 )]

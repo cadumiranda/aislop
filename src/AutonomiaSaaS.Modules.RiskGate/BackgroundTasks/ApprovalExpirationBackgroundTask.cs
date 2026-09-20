@@ -1,6 +1,7 @@
 using AutonomiaSaaS.Modules.BusinessCore.Domain;
 using AutonomiaSaaS.Modules.BusinessCore.Parts;
 using AutonomiaSaaS.Modules.BusinessCore.Services;
+using AutonomiaSaaS.Modules.RiskGate.AuditTrail;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.BackgroundTasks;
@@ -32,10 +33,13 @@ namespace AutonomiaSaaS.Modules.RiskGate.BackgroundTasks;
     LockExpiration = 60_000)]
 public sealed class ApprovalExpirationBackgroundTask : IBackgroundTask
 {
+    private const string AuditTrailCategory = "AutonomiaSaaS.RiskGate";
+
     public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         var agentTaskStore = serviceProvider.GetRequiredService<IAgentTaskStore>();
         var notifier = serviceProvider.GetRequiredService<IApprovalExpirationNotifier>();
+        var auditTrailRecorder = serviceProvider.GetRequiredService<IAuditTrailRecorder>();
         var logger = serviceProvider.GetRequiredService<ILogger<ApprovalExpirationBackgroundTask>>();
 
         IReadOnlyList<AgentTaskPart> expiredTasks;
@@ -60,7 +64,7 @@ public sealed class ApprovalExpirationBackgroundTask : IBackgroundTask
 
         foreach (var task in expiredTasks)
         {
-            await ExpireOneAsync(task, agentTaskStore, notifier, logger, cancellationToken);
+            await ExpireOneAsync(task, agentTaskStore, notifier, auditTrailRecorder, logger, cancellationToken);
         }
     }
 
@@ -68,6 +72,7 @@ public sealed class ApprovalExpirationBackgroundTask : IBackgroundTask
         AgentTaskPart task,
         IAgentTaskStore agentTaskStore,
         IApprovalExpirationNotifier notifier,
+        IAuditTrailRecorder auditTrailRecorder,
         ILogger logger,
         CancellationToken cancellationToken)
     {
@@ -81,8 +86,18 @@ public sealed class ApprovalExpirationBackgroundTask : IBackgroundTask
         catch (Exception ex)
         {
             logger.LogError(ex, "Falha ao transicionar a tarefa {TaskId} para Expirada.", task.TaskId);
-            return; // não notifica uma expiração que não foi de fato persistida
+            return; // não notifica nem audita uma expiração que não foi de fato persistida
         }
+
+        // Best-effort, na mesma ordem de importância que a notificação: a máquina de estados
+        // já está correta neste ponto, então nem falha de auditoria nem falha de notificação
+        // deveriam reverter isso ou travar as próximas tarefas da lista.
+        await auditTrailRecorder.RecordAsync<ApprovalExpiredAuditEvent>(
+            name: "ApprovalExpired",
+            category: AuditTrailCategory,
+            correlationId: task.TaskId.Value.ToString(),
+            eventItem: new ApprovalExpiredAuditEvent { TaskId = task.TaskId.Value, AgentName = task.AgentName },
+            cancellationToken: cancellationToken);
 
         try
         {

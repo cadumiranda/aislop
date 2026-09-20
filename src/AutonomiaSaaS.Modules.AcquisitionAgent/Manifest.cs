@@ -11,8 +11,10 @@ using OrchardCore.Modules.Manifest;
     Category = "Autonomia SaaS",
     Dependencies = new[]
     {
+        "OrchardCore.Navigation",
         "AutonomiaSaaS.Modules.AgentRuntime",
         "AutonomiaSaaS.Modules.BusinessCore",
+        "AutonomiaSaaS.Modules.CredentialVault",
         "AutonomiaSaaS.Modules.RiskGate"
     }
 )]

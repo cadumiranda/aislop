@@ -1,8 +1,12 @@
+using System.Security.Claims;
 using System.Security.Cryptography;
 using AutonomiaSaaS.Modules.CredentialVault.Abstractions;
+using AutonomiaSaaS.Modules.CredentialVault.AuditTrail;
 using AutonomiaSaaS.Modules.CredentialVault.Storage;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using OrchardCore.AuditTrail.Services;
 
 namespace AutonomiaSaaS.Modules.CredentialVault;
 
@@ -18,18 +22,25 @@ public sealed class DataProtectionCredentialVault : ICredentialVault
     /// com a purpose anterior (comportamento padrão e esperado do Data Protection API).
     /// </summary>
     private const string ProtectorPurpose = "AutonomiaSaaS.CredentialVault";
+    private const string AuditTrailCategory = "AutonomiaSaaS.CredentialVault";
 
     private readonly IAgentCredentialRecordStore _recordStore;
     private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly AutonomiaSaaS.Modules.CredentialVault.AuditTrail.IAuditTrailRecorder _auditTrailRecorder;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<DataProtectionCredentialVault> _logger;
 
     public DataProtectionCredentialVault(
         IAgentCredentialRecordStore recordStore,
         IDataProtectionProvider dataProtectionProvider,
+        IAuditTrailRecorder auditTrailRecorder,
+        IHttpContextAccessor httpContextAccessor,
         ILogger<DataProtectionCredentialVault> logger)
     {
         _recordStore = recordStore;
         _dataProtectionProvider = dataProtectionProvider;
+        _auditTrailRecorder = auditTrailRecorder;
+        _httpContextAccessor = httpContextAccessor;
         _logger = logger;
     }
 
@@ -40,6 +51,10 @@ public sealed class DataProtectionCredentialVault : ICredentialVault
         string? description = null,
         CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(agentName);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(key);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(plaintextValue);
+
         ArgumentException.ThrowIfNullOrWhiteSpace(agentName);
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
         ArgumentException.ThrowIfNullOrWhiteSpace(plaintextValue);
@@ -48,6 +63,7 @@ public sealed class DataProtectionCredentialVault : ICredentialVault
         var protectedValue = protector.Protect(plaintextValue);
 
         var existing = await _recordStore.FindAsync(agentName, key, cancellationToken);
+        var wasRotation = existing is not null;
         if (existing is not null)
         {
             existing.ProtectedValue = protectedValue;
@@ -55,19 +71,30 @@ public sealed class DataProtectionCredentialVault : ICredentialVault
             existing.RotatedUtc = DateTime.UtcNow;
             await _recordStore.SaveAsync(existing, cancellationToken);
             _logger.LogInformation("Credencial rotacionada: {AgentName}/{Key}.", agentName, key);
-            return;
+        }
+        else
+        {
+            var record = new AgentCredentialRecord
+            {
+                AgentName = agentName,
+                Key = key,
+                ProtectedValue = protectedValue,
+                Description = description,
+                CreatedUtc = DateTime.UtcNow,
+            };
+            await _recordStore.SaveAsync(record, cancellationToken);
+            _logger.LogInformation("Nova credencial gravada: {AgentName}/{Key}.", agentName, key);
         }
 
-        var record = new AgentCredentialRecord
-        {
-            AgentName = agentName,
-            Key = key,
-            ProtectedValue = protectedValue,
-            Description = description,
-            CreatedUtc = DateTime.UtcNow,
-        };
-        await _recordStore.SaveAsync(record, cancellationToken);
-        _logger.LogInformation("Nova credencial gravada: {AgentName}/{Key}.", agentName, key);
+        await RecordAuditEventAsync(
+            name: wasRotation ? "CredentialRotated" : "CredentialStored",
+            correlationId: BuildCorrelationId(agentName, key),
+            auditTrailEventItem: new CredentialStoredAuditEvent
+            {
+                AgentName = agentName,
+                Key = key,
+                WasRotation = wasRotation,
+            });
     }
 
     public async Task<string?> TryGetAsync(string agentName, string key, CancellationToken cancellationToken = default)
@@ -95,6 +122,11 @@ public sealed class DataProtectionCredentialVault : ICredentialVault
                 agentName, key);
             return null;
         }
+
+        // Deliberadamente NÃO auditado: TryGetAsync é chamado por agentes em runtime (ex: o
+        // VercelAuthenticationHandler, a cada requisição de deploy). Auditar toda leitura geraria
+        // ruído sem valor de compliance real — o que importa registrar é quem alterou uma
+        // credencial, não quem a usou pra fazer o trabalho pra qual ela existe.
     }
 
     public async Task RevokeAsync(string agentName, string key, CancellationToken cancellationToken = default)
@@ -102,10 +134,15 @@ public sealed class DataProtectionCredentialVault : ICredentialVault
         var record = await _recordStore.FindAsync(agentName, key, cancellationToken);
         if (record is null)
         {
-            return; // idempotente
+            return; // idempotente — e também não audita, já que nada mudou de fato
         }
         await _recordStore.DeleteAsync(record, cancellationToken);
         _logger.LogInformation("Credencial revogada: {AgentName}/{Key}.", agentName, key);
+
+        await RecordAuditEventAsync(
+            name: "CredentialRevoked",
+            correlationId: BuildCorrelationId(agentName, key),
+            auditTrailEventItem: new CredentialRevokedAuditEvent { AgentName = agentName, Key = key });
     }
 
     public async Task<IReadOnlyList<CredentialSummary>> ListAsync(CancellationToken cancellationToken = default)
@@ -132,4 +169,34 @@ public sealed class DataProtectionCredentialVault : ICredentialVault
     /// </summary>
     private IDataProtector CreateProtectorFor(string agentName)
         => _dataProtectionProvider.CreateProtector(ProtectorPurpose, agentName);
+
+    /// <summary>
+    /// Correlação por agente+chave — permite ver, na tela de Audit Trail, o histórico completo
+    /// de uma credencial específica (criada, rotacionada N vezes, revogada), não só um evento
+    /// isolado sem contexto do que veio antes.
+    /// </summary>
+    private static string BuildCorrelationId(string agentName, string key) => $"{agentName}:{key}";
+
+    /// <summary>
+    /// Uma falha ao gravar o evento de auditoria NUNCA deveria impedir a operação de negócio em
+    /// si (a credencial já foi gravada/revogada com sucesso antes desta chamada) — auditoria é
+    /// best-effort aqui, mesmo princípio já aplicado à notificação de expiração de aprovação.
+    /// </summary>
+    private async Task RecordAuditEventAsync<T>(string name, string correlationId, T auditTrailEventItem) where T : class, new()
+    {
+        try
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+            // Use the module-local recorder abstraction so tests can inject a fake implementation.
+            await _auditTrailRecorder.RecordAsync(
+                name,
+                AuditTrailCategory,
+                correlationId,
+                auditTrailEventItem);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Falha ao gravar evento de Audit Trail '{EventName}' (correlationId={CorrelationId}).", name, correlationId);
+        }
+    }
 }

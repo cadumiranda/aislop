@@ -12,6 +12,15 @@
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
+	<!--
+    Igual à nota no módulo de Sandbox: não fixe aqui a versão de pacotes OrchardCore.* que o
+    host (AutonomiaSaaS.Web) já resolve — isso já causou conflito real de versão do YesSql
+    (spec v2.0, seção 8.3). Este OrchardCore.BackgroundTasks é só para este pacote isolado
+    compilar sozinho nesta entrega; ao colar dentro do projeto RiskGate real, remova esta
+    PackageReference e deixe vir transitivamente do host, como os outros módulos já fazem.
+  -->
+	
+
   <ItemGroup>
     <!-- ⚠️ MAIOR RISCO DE COMPILAÇÃO DESTE MÓDULO: OrchardCore.Module.Targets
          é o pacote que traz o MSBuild targets responsável por empacotar
@@ -27,6 +36,9 @@
 	<PackageReference Include="OrchardCore.Notifications" Version="3.0.1" />
 	<PackageReference Include="OrchardCore.Users" Version="3.0.1" />
     <PackageReference Include="Elsa.Workflows.Core" Version="3.7.1" />
+	<PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.0" />
+	  <!-- [NOVO] Integração com Audit Trail. -->
+	  <PackageReference Include="OrchardCore.AuditTrail" Version="3.0.1" />
   </ItemGroup>
 
   <ItemGroup>
