@@ -6,6 +6,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.BackgroundTasks;
+using AutonomiaSaaS.Modules.BusinessCore.Services;
 
 namespace AutonomiaSaaS.Modules.RiskGate;
 
@@ -13,6 +14,8 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<IAgentTaskStore, AgentTaskStore>();
+
         services.AddScoped<IRiskClassifier, RiskClassifier>();
         services.AddScoped<ITaskRiskGateway, TaskRiskGateway>();
 

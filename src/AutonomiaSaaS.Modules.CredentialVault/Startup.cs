@@ -40,7 +40,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IAuditTrailEventHandler, CredentialVaultAuditTrailEventHandler>();
         services.AddScoped<IAuditTrailRecorder, OrchardAuditTrailRecorder>();
         // Register OrchardCore's IAuditTrailManager for the real recorder implementation
-        services.AddScoped<OrchardCore.AuditTrail.Services.IAuditTrailManager>(sp => sp.GetRequiredService<OrchardCore.AuditTrail.Services.IAuditTrailManager>());
+        services.AddScoped<IAuditTrailManager>(sp => sp.GetRequiredService<OrchardCore.AuditTrail.Services.IAuditTrailManager>());
 
         // UI de admin (Controller + Views ficam em Admin/, descobertos automaticamente pelo
         // Orchard Core dentro do assembly do módulo — não precisa registrar o Controller em si).
