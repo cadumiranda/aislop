@@ -1,3 +1,4 @@
+using OrchardCore.Modules;
 using System.Text.Json.Serialization;
 
 namespace AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment.Http;
@@ -8,7 +9,7 @@ namespace AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment.Http;
 // readyState) foram confirmados via busca na documentação oficial; a forma exata de aninhamento
 // pode precisar de ajuste.
 // ============================================================================
-
+[Feature("AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment")]
 internal sealed class VercelDeploymentFile
 {
     [JsonPropertyName("file")]
@@ -18,6 +19,7 @@ internal sealed class VercelDeploymentFile
     public required string Data { get; init; }
 }
 
+[Feature("AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment")]
 internal sealed class CreateDeploymentRequestBody
 {
     [JsonPropertyName("name")]
@@ -35,6 +37,7 @@ internal sealed class CreateDeploymentRequestBody
     public string? Target { get; init; }
 }
 
+[Feature("AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment")]
 internal sealed class DeploymentResponseBody
 {
     [JsonPropertyName("id")]

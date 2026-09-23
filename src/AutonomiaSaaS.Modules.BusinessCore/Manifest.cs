@@ -8,5 +8,5 @@ using OrchardCore.Modules.Manifest;
     Description = "Content Types e serviços centrais do negócio: BusinessContext e AgentTask, " +
                   "com a máquina de estados da tarefa (seção 6 do documento de arquitetura).",
     Category = "Autonomia SaaS",
-    Dependencies = new[] { "OrchardCore.Content", "OrchardCore.Data", "AutonomiaSaaS.Modules.CredentialVault" }
+    Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Data" }
 )]

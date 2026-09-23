@@ -1,5 +1,8 @@
+using OrchardCore.Modules;
+
 namespace AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment.Configuration;
 
+[Feature("AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment")]
 public sealed class VercelApiOptions
 {
     public string BaseUrl { get; set; } = "https://api.vercel.com";

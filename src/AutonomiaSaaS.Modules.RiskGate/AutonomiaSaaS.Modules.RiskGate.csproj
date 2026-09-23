@@ -12,6 +12,10 @@
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="BackgroundTasks\ApprovalExpirationBackgroundTask.cs" />
+  </ItemGroup>
+
 	<!--
     Igual à nota no módulo de Sandbox: não fixe aqui a versão de pacotes OrchardCore.* que o
     host (AutonomiaSaaS.Web) já resolve — isso já causou conflito real de versão do YesSql

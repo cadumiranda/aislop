@@ -3,6 +3,7 @@ using AutonomiaSaaS.Modules.AcquisitionAgent.Abstractions;
 using AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment.Configuration;
 using AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment.Http;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Modules;
 
 namespace AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment;
 
@@ -10,6 +11,7 @@ namespace AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment;
 /// Ver README para os avisos completos — em especial, isto nunca foi executado contra a Vercel
 /// real por mim (restrição de rede deste ambiente). Testado com HttpMessageHandler fake.
 /// </summary>
+[Feature("AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment")]
 public sealed class VercelDeploymentClient : IDeploymentClient
 {
     private readonly HttpClient _httpClient;

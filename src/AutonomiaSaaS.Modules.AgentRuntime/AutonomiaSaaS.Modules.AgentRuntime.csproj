@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="OrchardCoreDataMigrationStub.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <!-- Atualização: este módulo GANHOU Manifest.cs/Startup.cs (ver essa
          história no README) — a "class library pura" continua sendo a
          lógica de domínio, mas o módulo como um todo agora depende de
@@ -26,10 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AutonomiaSaaS.Modules.CredentialVault\AutonomiaSaaS.Modules.CredentialVault.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Cost\" />
   </ItemGroup>
 
 </Project>

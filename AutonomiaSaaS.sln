@@ -20,13 +20,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutonomiaSaaS.Modules.Acqui
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutonomiaSaaS.Web", "src\AutonomiaSaaS.Web\AutonomiaSaaS.Web.csproj", "{99999999-9999-9999-9999-999999999999}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutonomiaSaaS.Modules.Sandbox", "src\AutonomiaSaaS.Modules.Sandbox\AutonomiaSaaS.Modules.Sandbox.csproj", "{3F1484A2-114A-93B7-104D-F9E9BB56D16C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutonomiaSaaS.Modules.Sandbox.Tests", "src\AutonomiaSaaS.Modules.Sandbox.Tests\AutonomiaSaaS.Modules.Sandbox.Tests.csproj", "{A9435488-4EDD-ECC8-5226-E90C3C59F9D2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutonomiaSaaS.Modules.CredentialVault", "src\AutonomiaSaaS.Modules.CredentialVault\AutonomiaSaaS.Modules.CredentialVault.csproj", "{8F3D7699-E30A-581C-4900-6C4A42536421}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutonomiaSaaS.Modules.CredentialVault.Tests", "tests\AutonomiaSaaS.Modules.CredentialVault.Tests\AutonomiaSaaS.Modules.CredentialVault.Tests.csproj", "{C6AF3C86-375A-C5AA-6298-C6A564AE239B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutonomiaSaaS.Modules.Sandbox", "src\AutonomiaSaaS.Modules.Sandbox\AutonomiaSaaS.Modules.Sandbox.csproj", "{3F1484A2-114A-93B7-104D-F9E9BB56D16C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutonomiaSaaS.Modules.Sandbox.Tests", "src\AutonomiaSaaS.Modules.Sandbox.Tests\AutonomiaSaaS.Modules.Sandbox.Tests.csproj", "{A9435488-4EDD-ECC8-5226-E90C3C59F9D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,14 +70,6 @@ Global
 		{99999999-9999-9999-9999-999999999999}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99999999-9999-9999-9999-999999999999}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99999999-9999-9999-9999-999999999999}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3F1484A2-114A-93B7-104D-F9E9BB56D16C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3F1484A2-114A-93B7-104D-F9E9BB56D16C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3F1484A2-114A-93B7-104D-F9E9BB56D16C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3F1484A2-114A-93B7-104D-F9E9BB56D16C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A9435488-4EDD-ECC8-5226-E90C3C59F9D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A9435488-4EDD-ECC8-5226-E90C3C59F9D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A9435488-4EDD-ECC8-5226-E90C3C59F9D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A9435488-4EDD-ECC8-5226-E90C3C59F9D2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8F3D7699-E30A-581C-4900-6C4A42536421}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8F3D7699-E30A-581C-4900-6C4A42536421}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F3D7699-E30A-581C-4900-6C4A42536421}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -86,6 +78,14 @@ Global
 		{C6AF3C86-375A-C5AA-6298-C6A564AE239B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6AF3C86-375A-C5AA-6298-C6A564AE239B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6AF3C86-375A-C5AA-6298-C6A564AE239B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F1484A2-114A-93B7-104D-F9E9BB56D16C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F1484A2-114A-93B7-104D-F9E9BB56D16C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F1484A2-114A-93B7-104D-F9E9BB56D16C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F1484A2-114A-93B7-104D-F9E9BB56D16C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9435488-4EDD-ECC8-5226-E90C3C59F9D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9435488-4EDD-ECC8-5226-E90C3C59F9D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9435488-4EDD-ECC8-5226-E90C3C59F9D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9435488-4EDD-ECC8-5226-E90C3C59F9D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

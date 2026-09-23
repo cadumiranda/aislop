@@ -6,5 +6,7 @@ using OrchardCore.Modules.Manifest;
     Website = "https://autonomiasaas.example",
     Version = "0.1.0",
     Description = "Isolamento por container para execução de ferramentas de agente fora do processo do host.",
-    Category = "AutonomiaSaaS"
-)]
+    Category = "Autonomia SaaS",
+    Dependencies = new string[] { }
+        )]
+                

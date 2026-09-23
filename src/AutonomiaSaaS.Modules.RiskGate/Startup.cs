@@ -41,7 +41,7 @@ public sealed class Startup : StartupBase
         // using Microsoft.AspNetCore.Identity;
         // using OrchardCore.Users;
 
-        services.AddScoped<IBackgroundTask, ApprovalExpirationBackgroundTask>();
+        //services.AddScoped<IBackgroundTask, ApprovalExpirationBackgroundTask>();
 
         // Notificação real via OrchardCore.Notifications, no lugar do stub de log.
         services.AddScoped<IApprovalExpirationRecipientResolver, AdministratorRoleRecipientResolver>();

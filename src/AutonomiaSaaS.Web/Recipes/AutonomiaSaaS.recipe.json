@@ -4,7 +4,7 @@
   "name": "AutonomiaSaaS",
   "displayName": "AutonomiaSaaS — Setup completo da solução",
   "description": "Habilita todos os módulos do AutonomiaSaaS (AgentRuntime, BusinessCore, RiskGate, CredentialVault, Sandbox, AcquisitionAgent) e os recursos nativos do Orchard Core que a solução depende (Audit Trail, Notifications, Background Tasks).",
-  "author": "AutonomiaSaaS",
+  "author": "Carlos Eduardo Miranda",
   "website": "https://autonomiasaas.example",
   "version": "1.0.0",
   "issetuprecipe": true,
@@ -15,14 +15,26 @@
     {
       "name": "feature",
       "enable": [
+
         // --- Recursos nativos do Orchard Core que a solução depende ---
         "OrchardCore.Admin",
+        "OrchardCore.BackgroundTasks",
         "OrchardCore.Contents",
         "OrchardCore.Data",
+        "OrchardCore.Diagnostics",
+        "OrchardCore.DynamicCache",
+        "OrchardCore.HomeRoute",
+        "OrchardCore.Localization",
+        "OrchardCore.Features",
         "OrchardCore.Navigation",
-        "OrchardCore.Users",
-        "OrchardCore.Roles",
         "OrchardCore.Recipes",
+        "OrchardCore.Resources",
+        "OrchardCore.Roles",
+        "OrchardCore.Security",
+        "OrchardCore.Settings",
+        "OrchardCore.Themes",
+        "OrchardCore.Users",
+
         // [NOVO] Audit Trail — sem isso habilitado, IAuditTrailManager não está registrado e
         // qualquer módulo que dependa dele (CredentialVault, RiskGate) falha ao iniciar.
         "OrchardCore.AuditTrail",
@@ -39,18 +51,27 @@
         // atributo Id em [assembly: Module(...)], quando declarado explicitamente) antes de
         // rodar isto contra um tenant de verdade. Se o recipe falhar silenciosamente em
         // habilitar algum módulo, este é o primeiro lugar a checar.
-        "AutonomiaSaaS.Modules.AgentRuntime",
-        "AutonomiaSaaS.Modules.AgentRuntime.CostLogger",
-        "AutonomiaSaaS.Modules.BusinessCore",
-        "AutonomiaSaaS.Modules.RiskGate",
-        "AutonomiaSaaS.Modules.CredentialVault",
-        "AutonomiaSaaS.Modules.Sandbox",
-        "AutonomiaSaaS.Modules.AcquisitionAgent",
-        "AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment"
+        //"AutonomiaSaaS.Modules.AgentRuntime",
+        //"AutonomiaSaaS.Modules.AgentRuntime.CostLogger",
+        //"AutonomiaSaaS.Modules.BusinessCore",
+        //"AutonomiaSaaS.Modules.RiskGate",
+        //"AutonomiaSaaS.Modules.CredentialVault",
+        ////"AutonomiaSaaS.Modules.Sandbox",
+        //"AutonomiaSaaS.Modules.AcquisitionAgent",
+        //"AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment",
+
+        // Themes
+        "TheTheme",
+        "TheAdmin",
+        "SafeMode"
       ],
       "disable": []
     },
-
+    {
+      "name": "themes",
+      "admin": "TheAdmin",
+      "site": "TheTheme"
+    },
     // Retenção de 90 dias pro Audit Trail — evita crescimento indefinido da tabela, mas mantém
     // histórico suficiente pra qualquer investigação de decisão de agente que não seja do
     // último trimestre. Ajuste conforme a política de retenção real da empresa.
@@ -59,9 +80,13 @@
       "AuditTrailTrimmingSettings": {
         "RetentionDays": 90,
         "Disabled": false
+      },
+      "HomeRoute": {
+        "Action": "Index",
+        "Controller": "Home",
+        "Area": "TheTheme"
       }
     }
-
     // NÃO incluído de propósito, mesmo estando disponível como tipo de step: nenhuma criação de
     // BusinessContext/AgentTask aqui. Esses são dados por tenant/cliente, não configuração de
     // solução — pertencem a um fluxo de onboarding de cliente (ver conversa sobre

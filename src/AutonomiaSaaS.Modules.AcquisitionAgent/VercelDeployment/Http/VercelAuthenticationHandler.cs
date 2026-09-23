@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment.Configuration;
 using AutonomiaSaaS.Modules.CredentialVault.Abstractions;
+using OrchardCore.Modules;
 
 namespace AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment.Http;
 
@@ -10,6 +11,7 @@ namespace AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment.Http;
 /// Falha alto e imediato se o token não estiver disponível: nunca deixa a requisição sair sem
 /// Authorization, o que só resultaria numa 401 confusa vinda da Vercel.
 /// </summary>
+[Feature("AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment")]
 public sealed class VercelAuthenticationHandler : DelegatingHandler
 {
     private readonly ICredentialVault _credentialVault;

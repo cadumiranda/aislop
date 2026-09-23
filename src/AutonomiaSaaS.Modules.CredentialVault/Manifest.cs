@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = "https://autonomiasaas.example",
     Version = "0.1.0",
     Description = "Cofre de credenciais por agente, usando Data Protection e YesSql nativos do Orchard Core.",
-    Category = "AutonomiaSaaS",
+    Category = "Autonomia SaaS",
     Dependencies = new[] { "OrchardCore.Admin", "OrchardCore.AuditTrail", "OrchardCore.Data", "OrchardCore.Navigation", "OrchardCore.Security" }
 )]

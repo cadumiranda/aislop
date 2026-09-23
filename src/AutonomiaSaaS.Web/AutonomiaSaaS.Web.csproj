@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Recipes\AutonomiaSaaS.recipe.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Recipes\AutonomiaSaaS.recipe.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- Pacote "guarda-chuva" oficial usado pelos templates de CMS do
          Orchard Core — traz Admin UI, Content Management, Users/Roles,
          Data (SQLite/SQL Server/Postgres), Setup, Themes, etc. Mais pesado
@@ -24,7 +32,6 @@
     <ProjectReference Include="..\AutonomiaSaaS.Modules.CredentialVault\AutonomiaSaaS.Modules.CredentialVault.csproj" />
     <ProjectReference Include="..\AutonomiaSaaS.Modules.RiskGate\AutonomiaSaaS.Modules.RiskGate.csproj" />
     <ProjectReference Include="..\AutonomiaSaaS.Modules.AcquisitionAgent\AutonomiaSaaS.Modules.AcquisitionAgent.csproj" />
-    <ProjectReference Include="..\AutonomiaSaaS.Modules.Sandbox\AutonomiaSaaS.Modules.Sandbox.csproj" />
   </ItemGroup>
 
 </Project>

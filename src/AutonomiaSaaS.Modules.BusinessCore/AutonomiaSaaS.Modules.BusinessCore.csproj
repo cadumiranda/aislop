@@ -13,17 +13,12 @@
          via Directory.Packages.props quando o host existir). Ajuste a versão
          abaixo para a que estiver no seu AutonomiaSaaS.Web.csproj. -->
     <PackageReference Include="OrchardCore.ContentManagement" Version="3.0.1" />
-    <PackageReference Include="OrchardCore.ContentManagement.Abstractions" Version="3.0.1" />
-    <PackageReference Include="OrchardCore.Data.Abstractions" Version="3.0.1" />
+    <PackageReference Include="OrchardCore.Data" Version="3.0.1" />
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.1" />
     <!-- Removido referência explícita a YesSql.Abstractions para evitar conflitos
          de versão com dependências transitivas do Orchard Core. O pacote
          correto será resolvido pela dependência OrchardCore.Data.Abstractions. -->
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\AutonomiaSaaS.Modules.CredentialVault\AutonomiaSaaS.Modules.CredentialVault.csproj" />
   </ItemGroup>
 
   <!-- BusinessCore não referencia AgentRuntime nem nenhum outro módulo de

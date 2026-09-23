@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using System.Security.Cryptography;
 using AutonomiaSaaS.Modules.CredentialVault.Abstractions;
 using AutonomiaSaaS.Modules.CredentialVault.AuditTrail;
@@ -6,7 +5,6 @@ using AutonomiaSaaS.Modules.CredentialVault.Storage;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using OrchardCore.AuditTrail.Services;
 
 namespace AutonomiaSaaS.Modules.CredentialVault;
 
