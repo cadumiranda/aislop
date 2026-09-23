@@ -1,6 +1,7 @@
 using AutonomiaSaaS.Modules.CredentialVault.Abstractions;
 using AutonomiaSaaS.Modules.CredentialVault.Admin;
 using AutonomiaSaaS.Modules.CredentialVault.AuditTrail;
+using AutonomiaSaaS.Modules.CredentialVault.Logging;
 using AutonomiaSaaS.Modules.CredentialVault.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.AuditTrail.Services;
@@ -46,5 +47,7 @@ public sealed class Startup : StartupBase
         // Orchard Core dentro do assembly do módulo — não precisa registrar o Controller em si).
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<INavigationProvider, AdminMenu>();
+
+        services.AddScoped<IModularTenantEvents, MyStartupTaskService>();
     }
 }

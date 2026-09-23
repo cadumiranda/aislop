@@ -8,5 +8,4 @@ using OrchardCore.Modules.Manifest;
     Description = "Isolamento por container para execução de ferramentas de agente fora do processo do host.",
     Category = "Autonomia SaaS",
     Dependencies = new string[] { }
-        )]
-                
+)]

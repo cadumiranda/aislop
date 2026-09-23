@@ -1,7 +1,9 @@
 using AutonomiaSaaS.Modules.Sandbox.Abstractions;
 using AutonomiaSaaS.Modules.Sandbox.Execution;
+using AutonomiaSaaS.Modules.Sandbox.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Modules;
 
 namespace AutonomiaSaaS.Modules.Sandbox;
@@ -28,10 +30,13 @@ public sealed class Startup : StartupBase
             return options;
         });
 
+        services.AddSingleton<ILogger<DockerSandboxRunner>, ILogger<DockerSandboxRunner>>();
         services.AddSingleton<IProcessInvoker, ProcessInvoker>();
         services.AddSingleton<ISandboxRunner, DockerSandboxRunner>();
         services.AddSingleton<ISandboxExecutionQueue, InMemorySandboxExecutionQueue>();
         services.AddSingleton<ISandboxExecutionResultSink, LoggingSandboxExecutionResultSink>();
         services.AddHostedService<SandboxExecutionHostedService>();
+
+        services.AddScoped<IModularTenantEvents, MyStartupTaskService>();
     }
 }

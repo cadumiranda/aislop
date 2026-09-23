@@ -51,13 +51,12 @@
         // atributo Id em [assembly: Module(...)], quando declarado explicitamente) antes de
         // rodar isto contra um tenant de verdade. Se o recipe falhar silenciosamente em
         // habilitar algum módulo, este é o primeiro lugar a checar.
-        //"AutonomiaSaaS.Modules.AgentRuntime",
-        //"AutonomiaSaaS.Modules.AgentRuntime.CostLogger",
-        //"AutonomiaSaaS.Modules.BusinessCore",
-        //"AutonomiaSaaS.Modules.RiskGate",
-        //"AutonomiaSaaS.Modules.CredentialVault",
-        ////"AutonomiaSaaS.Modules.Sandbox",
-        //"AutonomiaSaaS.Modules.AcquisitionAgent",
+        "AutonomiaSaaS.Modules.CredentialVault",
+        "AutonomiaSaaS.Modules.Sandbox",
+        "AutonomiaSaaS.Modules.BusinessCore",
+        "AutonomiaSaaS.Modules.AgentRuntime",
+        "AutonomiaSaaS.Modules.RiskGate",
+        "AutonomiaSaaS.Modules.AcquisitionAgent",
         //"AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment",
 
         // Themes

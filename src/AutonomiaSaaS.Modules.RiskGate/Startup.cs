@@ -7,6 +7,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.BackgroundTasks;
 using AutonomiaSaaS.Modules.BusinessCore.Services;
+using AutonomiaSaaS.Modules.RiskGate.Logging;
 
 namespace AutonomiaSaaS.Modules.RiskGate;
 
@@ -40,8 +41,8 @@ public sealed class Startup : StartupBase
         // using AutonomiaSaaS.Modules.RiskGate.BackgroundTasks;
         // using Microsoft.AspNetCore.Identity;
         // using OrchardCore.Users;
-
-        //services.AddScoped<IBackgroundTask, ApprovalExpirationBackgroundTask>();
+        services.AddScoped<ITaskRiskGateway, TaskRiskGateway>();
+        services.AddScoped<IBackgroundTask, ApprovalExpirationBackgroundTask>();
 
         // Notificação real via OrchardCore.Notifications, no lugar do stub de log.
         services.AddScoped<IApprovalExpirationRecipientResolver, AdministratorRoleRecipientResolver>();
@@ -49,7 +50,7 @@ public sealed class Startup : StartupBase
 
         // Mantenha o registro abaixo comentado como alternativa apenas para ambiente local sem o
         // módulo OrchardCore.Notifications habilitado:
-        // services.AddSingleton<IApprovalExpirationNotifier, LoggingApprovalExpirationNotifier>();
+        services.AddSingleton<IApprovalExpirationNotifier, LoggingApprovalExpirationNotifier>();
 
         // ============================================================================
         // PRÉ-REQUISITOS DE MÓDULO/FEATURE (fora do código, no Manifest de dependências ou no recipe
@@ -65,5 +66,6 @@ public sealed class Startup : StartupBase
         //     instâncias com um provedor de lock distribuído configurado (ex: OrchardCore.Redis).
         //     Com uma única instância, isso já não importa.
         // ============================================================================
+        services.AddScoped<IModularTenantEvents, MyStartupTaskService>();
     }
 }

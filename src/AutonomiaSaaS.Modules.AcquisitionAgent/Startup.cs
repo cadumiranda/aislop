@@ -4,6 +4,7 @@ using AutonomiaSaaS.Modules.BusinessCore.Services;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using AutonomiaSaaS.Modules.AcquisitionAgent.Logging;
 
 namespace AutonomiaSaaS.Modules.AcquisitionAgent;
 
@@ -38,5 +39,7 @@ public sealed class Startup : StartupBase
         {
             services.AddSingleton<IDeploymentClient, FakeDeploymentClient>();
         }
+
+        services.AddScoped<IModularTenantEvents, MyStartupTaskService>();
     }
 }

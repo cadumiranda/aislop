@@ -1,4 +1,5 @@
 using AutonomiaSaaS.Modules.BusinessCore.Indexes;
+using AutonomiaSaaS.Modules.BusinessCore.Logging;
 using AutonomiaSaaS.Modules.BusinessCore.Parts;
 using AutonomiaSaaS.Modules.BusinessCore.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +14,9 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+
+        services.AddSingleton<IContentManager, DefaultContentManager>();
+
         services.AddContentPart<BusinessContextPart>();
         services.AddContentPart<AgentTaskPart>();
 
@@ -22,5 +26,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IAgentTaskStore, AgentTaskStore>();
         services.AddScoped<IBusinessContextStore, BusinessContextStore>();
         services.AddScoped<IApprovedTaskDispatcher, ApprovedTaskDispatcher>();
+
+        services.AddScoped<IModularTenantEvents, MyStartupTaskService>();
     }
 }

@@ -1,9 +1,11 @@
 using AutonomiaSaaS.Modules.AgentRuntime.CostLogger;
 using AutonomiaSaaS.Modules.AgentRuntime.CostLogger.Storage;
+using AutonomiaSaaS.Modules.AgentRuntime.Logging;
 using AutonomiaSaaS.Modules.AgentRuntime.ModelRouting;
 using AutonomiaSaaS.Modules.AgentRuntime.Pricing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
 using YesSql.Indexes;
 
 namespace AutonomiaSaaS.Modules.AgentRuntime.DependencyInjection;
@@ -60,6 +62,8 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IModelRouter, ModelRouter>();
         services.AddScoped<IAgentRuntime, AgentRuntimeService>();
+
+        services.AddScoped<IModularTenantEvents, MyStartupTaskService>();
 
         return services;
     }
