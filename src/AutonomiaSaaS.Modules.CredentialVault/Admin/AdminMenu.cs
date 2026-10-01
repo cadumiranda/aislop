@@ -20,7 +20,7 @@ public sealed class AdminMenu : INavigationProvider
         }
 
         builder
-            .Add(S["AutonomiaSaaS"], "10", saas => saas
+            .Add(S["Autonomia SaaS"], "10", saas => saas
                 .Add(S["Cofre de Credenciais"], "10", credentials => credentials
                     .Action("Index", "AgentCredentialsAdmin", new { area = "AutonomiaSaaS.Modules.CredentialVault" })
                     .Permission(CredentialVaultPermissions.ManageAgentCredentials)

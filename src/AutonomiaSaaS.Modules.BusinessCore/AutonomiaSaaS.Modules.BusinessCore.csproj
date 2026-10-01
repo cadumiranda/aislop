@@ -12,6 +12,7 @@
          versão do host AutonomiaSaaS.Web (gerenciada centralmente, idealmente
          via Directory.Packages.props quando o host existir). Ajuste a versão
          abaixo para a que estiver no seu AutonomiaSaaS.Web.csproj. -->
+    <PackageReference Include="OrchardCore.Module.Targets" Version="3.0.1" />
     <PackageReference Include="OrchardCore.ContentManagement" Version="3.0.1" />
     <PackageReference Include="OrchardCore.Data" Version="3.0.1" />
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />

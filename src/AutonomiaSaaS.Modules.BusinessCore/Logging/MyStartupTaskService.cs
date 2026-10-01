@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Modules;
 
 namespace AutonomiaSaaS.Modules.BusinessCore.Logging
 {
-    public class MyStartupTaskService : ModularTenantEvents
+    public sealed class MyStartupTaskService : ModularTenantEvents
     {
         private readonly ILogger<MyStartupTaskService> _logger;
 

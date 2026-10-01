@@ -18,9 +18,10 @@ public class StartupActivationTests
         // Act
         startup.ConfigureServices(services);
         using var provider = services.BuildServiceProvider(validateScopes: true);
+        using var scope = provider.CreateScope();
 
         // Assert: resolving IAgentTaskStore should fail because required infrastructure (YesSql.ISession, OrchardCore services)
-        var ex = Assert.Throws<InvalidOperationException>(() => provider.GetRequiredService<IAgentTaskStore>());
+        var ex = Assert.Throws<InvalidOperationException>(() => scope.ServiceProvider.GetRequiredService<IAgentTaskStore>());
 
         // Make the assertion explicit about the likely missing dependency
         Assert.Contains("Unable to resolve service for type 'OrchardCore.", ex.Message, StringComparison.OrdinalIgnoreCase);
