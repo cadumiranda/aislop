@@ -12,19 +12,11 @@ public sealed record LandingPagePlan(
     string Html
 );
 
-public enum DeploymentStatus
-{
-    Healthy,
-    Unhealthy
-}
 
-/// <summary>
-/// Resultado de uma operação de deploy (staging, produção ou rollback).
-/// DeploymentId é o identificador do provedor externo (Vercel), não o
-/// ContentItemId de uma AgentTask — os dois vivem em espaços diferentes.
-/// </summary>
-public sealed record DeploymentResult(
-    string DeploymentId,
-    string Url,
-    DeploymentStatus Status
-);
+
+
+//public sealed record DeploymentResult(
+//    string DeploymentId,
+//    string Url,
+//    DeploymentStatus Status
+//);

@@ -1,5 +1,6 @@
 using AutonomiaSaaS.Modules.AcquisitionAgent;
 using AutonomiaSaaS.Modules.AcquisitionAgent.Services;
+using AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment;
 using AutonomiaSaaS.Modules.BusinessCore.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

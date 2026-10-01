@@ -36,14 +36,14 @@ public sealed class Migrations : DataMigration
             .Listable(true)     // aparece no painel de aprovação
             .Draftable(false)); // uma AgentTask não tem estado de rascunho, só os estados da seção 6
 
-        SchemaBuilder.CreateMapIndexTableAsync(typeof(AgentTaskPartIndex), table => table
+        await SchemaBuilder.CreateMapIndexTableAsync(typeof(AgentTaskPartIndex), table => table
             .Column<string>("ContentItemId", column => column.WithLength(26))
             .Column<string>("AgentName", column => column.WithLength(64))
             .Column<int>("RiskLevel")
             .Column<int>("Status")
             .Column<DateTimeOffset>("ApprovalTimeout", column => column.Nullable()), null);
 
-        SchemaBuilder.AlterIndexTableAsync(typeof(AgentTaskPartIndex), table => table
+        await SchemaBuilder.AlterIndexTableAsync(typeof(AgentTaskPartIndex), table => table
             .CreateIndex("IDX_AgentTaskPartIndex_Status", "Status", "ApprovalTimeout"), null);
 
         return 1;

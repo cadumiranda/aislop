@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "const": "ResetIndex",
+      "description": "Recipe step discriminator. Must be \u0027ResetIndex\u0027."
+    },
+    "IncludeAll": {
+      "type": "boolean",
+      "description": "When true, reset all index profiles and ignore the IndexNames list."
+    },
+    "IndexNames": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Specific index profile names to reset when IncludeAll is false."
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "additionalProperties": true
+}

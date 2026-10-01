@@ -1,0 +1,33 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "const": "AdminTemplates",
+      "description": "Recipe step discriminator. Must be \u0027AdminTemplates\u0027."
+    },
+    "AdminTemplates": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "Content": {
+            "type": "string",
+            "description": "Liquid template content."
+          },
+          "Description": {
+            "type": "string",
+            "description": "Administrative description of what the template customizes."
+          }
+        },
+        "additionalProperties": true
+      },
+      "description": "A dictionary keyed by template name. Each value has a Content property with Liquid markup."
+    }
+  },
+  "required": [
+    "name",
+    "AdminTemplates"
+  ],
+  "additionalProperties": true
+}

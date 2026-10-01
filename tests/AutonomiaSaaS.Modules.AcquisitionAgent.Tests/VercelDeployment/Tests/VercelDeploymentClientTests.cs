@@ -1,5 +1,5 @@
 using System.Net;
-using AutonomiaSaaS.Modules.AcquisitionAgent.Abstractions;
+using AutonomiaSaaS.Modules.AcquisitionAgent.Domain;
 using AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;

@@ -28,12 +28,12 @@ public sealed record DeploymentRequest
     public required IReadOnlyDictionary<string, string> Files { get; init; }
 }
 
-public sealed record DeploymentResult
-{
-    public required string DeploymentId { get; init; }
-    public required string Url { get; init; }
-    public required DeploymentReadyState ReadyState { get; init; }
-}
+//public sealed record DeploymentResult
+//{
+//    public required string DeploymentId { get; init; }
+//    public required string Url { get; init; }
+//    public required DeploymentReadyState ReadyState { get; init; }
+//}
 
 public sealed record DeploymentHealthResult
 {
@@ -44,16 +44,16 @@ public sealed record DeploymentHealthResult
     public string? ErrorDetail { get; init; }
 }
 
-public interface IDeploymentClient
-{
-    Task<DeploymentResult> DeployToStagingAsync(DeploymentRequest request, CancellationToken cancellationToken = default);
+//public interface IDeploymentClient
+//{
+//    Task<DeploymentResult> DeployToStagingAsync(DeploymentRequest request, CancellationToken cancellationToken = default);
 
-    /// <summary>Faz polling até READY/ERROR/CANCELED ou timeout — ver README para os valores default.</summary>
-    Task<DeploymentHealthResult> CheckDeploymentAsync(string deploymentId, CancellationToken cancellationToken = default);
+//    /// <summary>Faz polling até READY/ERROR/CANCELED ou timeout — ver README para os valores default.</summary>
+//    Task<DeploymentHealthResult> CheckDeploymentAsync(string deploymentId, CancellationToken cancellationToken = default);
 
-    /// <summary>Aponta o tráfego de produção do projeto para este deployment. Não refaz o build (comportamento nativo da Vercel).</summary>
-    Task PromoteToProductionAsync(string projectId, string stagingDeploymentId, CancellationToken cancellationToken = default);
+//    /// <summary>Aponta o tráfego de produção do projeto para este deployment. Não refaz o build (comportamento nativo da Vercel).</summary>
+//    Task PromoteToProductionAsync(string projectId, string stagingDeploymentId, CancellationToken cancellationToken = default);
 
-    /// <summary>Reverte produção para um deployment anterior específico — quem chama precisa já saber qual era o deployment de produção anterior.</summary>
-    Task RollbackToPreviousAsync(string projectId, string previousProductionDeploymentId, CancellationToken cancellationToken = default);
-}
+//    /// <summary>Reverte produção para um deployment anterior específico — quem chama precisa já saber qual era o deployment de produção anterior.</summary>
+//    Task RollbackToPreviousAsync(string projectId, string previousProductionDeploymentId, CancellationToken cancellationToken = default);
+//}

@@ -4,8 +4,10 @@ using AutonomiaSaaS.Modules.BusinessCore.Parts;
 using AutonomiaSaaS.Modules.BusinessCore.Services;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
 using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
+using YesSql;
 using YesSql.Indexes;
 
 namespace AutonomiaSaaS.Modules.BusinessCore;
@@ -14,18 +16,30 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-
-        services.AddSingleton<IContentManager, DefaultContentManager>();
-
         services.AddContentPart<BusinessContextPart>();
         services.AddContentPart<AgentTaskPart>();
 
         services.AddSingleton<IIndexProvider, AgentTaskPartIndexProvider>();
         services.AddDataMigration<Migrations>();
 
+        services.AddContentManagement();
+        services.AddContentManagementDisplay();
+
         services.AddScoped<IAgentTaskStore, AgentTaskStore>();
         services.AddScoped<IBusinessContextStore, BusinessContextStore>();
         services.AddScoped<IApprovedTaskDispatcher, ApprovedTaskDispatcher>();
+
+        //
+
+        //services.AddContentPart<BusinessContextPart>();
+        //services.AddContentPart<AgentTaskPart>();
+
+        //services.AddSingleton<IIndexProvider, AgentTaskPartIndexProvider>();
+        //services.AddDataMigration<Migrations>();
+
+        //services.AddScoped<IAgentTaskStore, AgentTaskStore>();
+        //services.AddScoped<IBusinessContextStore, BusinessContextStore>();
+        //services.AddScoped<IApprovedTaskDispatcher, ApprovedTaskDispatcher>();
 
         services.AddScoped<IModularTenantEvents, MyStartupTaskService>();
     }

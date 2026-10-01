@@ -76,19 +76,32 @@ public sealed class VercelDeploymentClient : IDeploymentClient
             .ConfigureAwait(false)
             ?? throw new InvalidOperationException("Resposta vazia da Vercel ao promover para produção.");
 
-        return new DeploymentResult(body.Id, body.Url, DeploymentStatus.Healthy);
+        return new DeploymentResult(){ DeploymentId: body.Id, Url: body.Url, Status: DeploymentStatus.Healthy, ReadyState: body.ReadyState };
     }
 
-    public Task<DeploymentResult> RollbackToPreviousAsync(
+    public async Task<DeploymentResult> RollbackToPreviousAsync(
         string previousDeploymentId, CancellationToken cancellationToken = default)
         // Rollback na Vercel é, na prática, promover de novo o deployment
         // anterior — não existe uma operação distinta de "desfazer".
-        => PromoteToProductionAsync(previousDeploymentId, cancellationToken);
+        => await PromoteToProductionAsync(previousDeploymentId, cancellationToken).ConfigureAwait(false);
 
-    private sealed class VercelDeploymentResponse
+    public Task<DeploymentResult> DeployToStagingAsync(DeploymentRequest request, CancellationToken cancellationToken = default)
     {
-        public string Id { get; set; } = string.Empty;
-        public string Url { get; set; } = string.Empty;
-        public string? ReadyState { get; set; }
+        throw new NotImplementedException();
+    }
+
+    Task<DeploymentHealthResult> IDeploymentClient.CheckDeploymentAsync(string deploymentId, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<DeploymentResult> PromoteToProductionAsync(string projectId, string stagingDeploymentId, CancellationToken cancellationToken = default)
+    {
+        return await PromoteToProductionAsync(stagingDeploymentId, cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task<DeploymentResult> RollbackToPreviousAsync(string projectId, string previousProductionDeploymentId, CancellationToken cancellationToken = default)
+    {
+        return await RollbackToPreviousAsync(previousProductionDeploymentId, cancellationToken).ConfigureAwait(false);
     }
 }

@@ -1,0 +1,34 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "const": "OpenIdValidationSettings",
+      "description": "Recipe step discriminator. Must be \u0027OpenIdValidationSettings\u0027."
+    },
+    "MetadataAddress": {
+      "type": "string",
+      "description": "Absolute URL of the OpenID Connect metadata document."
+    },
+    "Audience": {
+      "type": "string",
+      "description": "Expected token audience for validation."
+    },
+    "Authority": {
+      "type": "string",
+      "description": "Authority or issuer base URL used for token validation."
+    },
+    "DisableTokenTypeValidation": {
+      "type": "boolean",
+      "description": "Whether token type checks should be skipped during validation."
+    },
+    "Tenant": {
+      "type": "string",
+      "description": "Optional tenant or issuer hint used by the validation handler."
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "additionalProperties": true
+}

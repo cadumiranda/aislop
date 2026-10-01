@@ -1,3 +1,7 @@
+//using OrchardCore.Logging;
+using OrchardCore.Logging;
+using Serilog;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // AddOrchardCms() é o ponto de entrada padrão do Orchard Core: ele descobre
@@ -8,8 +12,14 @@ var builder = WebApplication.CreateBuilder(args);
 // deste projeto. Não precisa registrar nada manualmente aqui.
 builder.Services.AddOrchardCms();
 
+builder.Host.ConfigureLogging(logging => logging.ClearProviders())
+                .UseSerilog((hostingContext, configBuilder) =>
+                {
+                    configBuilder.ReadFrom.Configuration(hostingContext.Configuration).Enrich.FromLogContext();
+                });
+
 var app = builder.Build();
 
-app.UseOrchardCore();
+app.UseOrchardCore(c => c.UseSerilogTenantNameLogging());
 
 app.Run();

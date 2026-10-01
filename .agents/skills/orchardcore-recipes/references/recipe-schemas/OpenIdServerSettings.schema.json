@@ -1,0 +1,150 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "const": "OpenIdServerSettings",
+      "description": "Recipe step discriminator. Must be \u0027OpenIdServerSettings\u0027."
+    },
+    "AccessTokenFormat": {
+      "type": "string",
+      "enum": [
+        "DataProtection",
+        "JsonWebToken"
+      ],
+      "description": "Format used when issuing access tokens."
+    },
+    "Authority": {
+      "type": "string",
+      "description": "Public authority or issuer URL exposed by the OpenID server."
+    },
+    "DisableAccessTokenEncryption": {
+      "type": "boolean",
+      "description": "Whether encrypted access tokens should be disabled."
+    },
+    "EncryptionCertificateStoreLocation": {
+      "type": "string",
+      "enum": [
+        "CurrentUser",
+        "LocalMachine"
+      ],
+      "description": "Windows certificate store location that contains the encryption certificate."
+    },
+    "EncryptionCertificateStoreName": {
+      "type": "string",
+      "enum": [
+        "AddressBook",
+        "AuthRoot",
+        "CertificateAuthority",
+        "Disallowed",
+        "My",
+        "Root",
+        "TrustedPeople",
+        "TrustedPublisher"
+      ],
+      "description": "Windows certificate store name that contains the encryption certificate."
+    },
+    "EncryptionCertificateThumbprint": {
+      "type": "string",
+      "description": "Thumbprint of the certificate used for token encryption."
+    },
+    "SigningCertificateStoreLocation": {
+      "type": "string",
+      "enum": [
+        "CurrentUser",
+        "LocalMachine"
+      ],
+      "description": "Windows certificate store location that contains the signing certificate."
+    },
+    "SigningCertificateStoreName": {
+      "type": "string",
+      "enum": [
+        "AddressBook",
+        "AuthRoot",
+        "CertificateAuthority",
+        "Disallowed",
+        "My",
+        "Root",
+        "TrustedPeople",
+        "TrustedPublisher"
+      ],
+      "description": "Windows certificate store name that contains the signing certificate."
+    },
+    "SigningCertificateThumbprint": {
+      "type": "string",
+      "description": "Thumbprint of the certificate used for signing tokens."
+    },
+    "EnableTokenEndpoint": {
+      "type": "boolean",
+      "description": "Whether the token endpoint is enabled."
+    },
+    "EnableAuthorizationEndpoint": {
+      "type": "boolean",
+      "description": "Whether the authorization endpoint is enabled."
+    },
+    "EnableLogoutEndpoint": {
+      "type": "boolean",
+      "description": "Whether the logout endpoint is enabled."
+    },
+    "EnableUserInfoEndpoint": {
+      "type": "boolean",
+      "description": "Whether the user info endpoint is enabled."
+    },
+    "EnableIntrospectionEndpoint": {
+      "type": "boolean",
+      "description": "Whether the introspection endpoint is enabled."
+    },
+    "EnablePushedAuthorizationEndpoint": {
+      "type": "boolean",
+      "description": "Whether the pushed authorization endpoint is enabled."
+    },
+    "EnableRevocationEndpoint": {
+      "type": "boolean",
+      "description": "Whether the revocation endpoint is enabled."
+    },
+    "AllowPasswordFlow": {
+      "type": "boolean",
+      "description": "Whether the resource owner password flow is allowed."
+    },
+    "AllowClientCredentialsFlow": {
+      "type": "boolean",
+      "description": "Whether the client credentials flow is allowed."
+    },
+    "AllowAuthorizationCodeFlow": {
+      "type": "boolean",
+      "description": "Whether the authorization code flow is allowed."
+    },
+    "AllowRefreshTokenFlow": {
+      "type": "boolean",
+      "description": "Whether refresh tokens can be exchanged for new access tokens."
+    },
+    "AllowHybridFlow": {
+      "type": "boolean",
+      "description": "Whether hybrid response types are allowed."
+    },
+    "AllowImplicitFlow": {
+      "type": "boolean",
+      "description": "Whether implicit response types are allowed."
+    },
+    "DisableRollingRefreshTokens": {
+      "type": "boolean",
+      "description": "Whether refresh token rolling should be disabled."
+    },
+    "RequireProofKeyForCodeExchange": {
+      "type": "boolean",
+      "description": "Whether PKCE is required for authorization code flows."
+    },
+    "RequirePushedAuthorizationRequests": {
+      "type": "boolean",
+      "description": "Whether clients must use pushed authorization requests."
+    },
+    "UseReferenceAccessTokens": {
+      "type": "boolean",
+      "description": "Whether reference access tokens should be issued instead of self-contained tokens."
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "additionalProperties": true
+}

@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "const": "TwitterSettings",
+      "description": "Recipe step discriminator. Must be \u0027TwitterSettings\u0027."
+    },
+    "ConsumerKey": {
+      "type": "string",
+      "description": "Twitter/X API consumer key."
+    },
+    "ConsumerSecret": {
+      "type": "string",
+      "description": "Twitter/X API consumer secret."
+    },
+    "AccessToken": {
+      "type": "string",
+      "description": "Twitter/X API access token used for authenticated requests."
+    },
+    "AccessTokenSecret": {
+      "type": "string",
+      "description": "Twitter/X API access token secret."
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "additionalProperties": true
+}

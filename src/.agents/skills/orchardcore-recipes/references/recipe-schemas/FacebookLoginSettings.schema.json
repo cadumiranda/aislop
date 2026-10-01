@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "const": "FacebookLoginSettings",
+      "description": "Recipe step discriminator. Must be \u0027FacebookLoginSettings\u0027."
+    },
+    "CallbackPath": {
+      "type": "string",
+      "description": "Relative callback path that Facebook redirects back to after sign-in."
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "additionalProperties": true
+}

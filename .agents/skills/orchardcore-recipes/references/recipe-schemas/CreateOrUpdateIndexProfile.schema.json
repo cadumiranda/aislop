@@ -1,0 +1,41 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "const": "CreateOrUpdateIndexProfile",
+      "description": "Recipe step discriminator. Must be \u0027CreateOrUpdateIndexProfile\u0027."
+    },
+    "Indexes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Id": {
+            "type": "string",
+            "description": "Optional unique identifier for the index profile."
+          },
+          "Name": {
+            "type": "string",
+            "description": "Unique index profile name."
+          },
+          "ProviderName": {
+            "type": "string",
+            "description": "Index provider name, such as Lucene, Elasticsearch, or AzureAI."
+          },
+          "Type": {
+            "type": "string",
+            "description": "Index profile type used by the target feature or indexing task."
+          }
+        },
+        "additionalProperties": true
+      },
+      "description": "Index profiles to create or update."
+    }
+  },
+  "required": [
+    "name",
+    "Indexes"
+  ],
+  "additionalProperties": true
+}

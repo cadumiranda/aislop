@@ -1,0 +1,130 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "const": "AIDeployment",
+      "description": "Recipe step discriminator. Must be \u0027AIDeployment\u0027."
+    },
+    "Deployments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "description": "Deployment name as specified by the vendor."
+          },
+          "ModelName": {
+            "type": "string",
+            "description": "Optional vendor model name. Defaults to Name when omitted."
+          },
+          "ClientName": {
+            "type": "string",
+            "description": "Client name for the registered AI provider."
+          },
+          "ConnectionName": {
+            "type": "string",
+            "description": "Connection name used to configure the provider."
+          },
+          "Endpoint": {
+            "type": "string",
+            "description": "Contained-connection endpoint alias for recipe imports. Supported by AzureSpeech deployments."
+          },
+          "AuthenticationType": {
+            "type": "string",
+            "enum": [
+              "Default",
+              "ManagedIdentity",
+              "ApiKey"
+            ],
+            "description": "Contained-connection authentication type alias for recipe imports. Supported by AzureSpeech deployments."
+          },
+          "ApiKey": {
+            "type": "string",
+            "description": "Contained-connection API key alias for recipe imports. Supported by AzureSpeech deployments."
+          },
+          "IdentityId": {
+            "type": "string",
+            "description": "Contained-connection managed identity client ID alias for recipe imports. Supported by AzureSpeech deployments."
+          },
+          "Properties": {
+            "type": "object",
+            "properties": {
+              "Endpoint": {
+                "type": "string",
+                "description": "Contained-connection endpoint. Used by AzureSpeech deployments."
+              },
+              "AuthenticationType": {
+                "type": "string",
+                "enum": [
+                  "Default",
+                  "ManagedIdentity",
+                  "ApiKey"
+                ],
+                "description": "Azure authentication type. Supported values are Default, ManagedIdentity, or ApiKey."
+              },
+              "ApiKey": {
+                "type": "string",
+                "description": "Contained-connection API key. Required when AuthenticationType is ApiKey."
+              },
+              "IdentityId": {
+                "type": "string",
+                "description": "Optional client ID of a user-assigned managed identity. Used when AuthenticationType is ManagedIdentity."
+              }
+            },
+            "additionalProperties": true,
+            "description": "Contained provider connection properties stored directly on the deployment."
+          },
+          "Purpose": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "Chat",
+                  "Utility",
+                  "Embedding",
+                  "Image",
+                  "SpeechToText",
+                  "TextToSpeech",
+                  "Vision"
+                ],
+                "description": "The deployment purpose. Defaults to Chat when not specified."
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "Chat",
+                    "Utility",
+                    "Embedding",
+                    "Image",
+                    "SpeechToText",
+                    "TextToSpeech",
+                    "Vision"
+                  ],
+                  "description": "The deployment purpose. Defaults to Chat when not specified."
+                },
+                "minItems": 1,
+                "uniqueItems": true,
+                "description": "The deployment purposes."
+              }
+            ]
+          }
+        },
+        "required": [
+          "Name"
+        ],
+        "additionalProperties": true
+      },
+      "minItems": 1,
+      "description": "The AI deployments to create or update."
+    }
+  },
+  "required": [
+    "name",
+    "Deployments"
+  ],
+  "additionalProperties": true
+}

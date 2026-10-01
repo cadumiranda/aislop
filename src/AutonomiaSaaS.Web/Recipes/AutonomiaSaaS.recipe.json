@@ -53,11 +53,10 @@
         // habilitar algum módulo, este é o primeiro lugar a checar.
         "AutonomiaSaaS.Modules.CredentialVault",
         "AutonomiaSaaS.Modules.Sandbox",
-        "AutonomiaSaaS.Modules.BusinessCore",
         "AutonomiaSaaS.Modules.AgentRuntime",
+        "AutonomiaSaaS.Modules.BusinessCore",
         "AutonomiaSaaS.Modules.RiskGate",
         "AutonomiaSaaS.Modules.AcquisitionAgent",
-        //"AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment",
 
         // Themes
         "TheTheme",

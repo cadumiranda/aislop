@@ -13,6 +13,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Abstractions\IDeploymentClient.cs" />
+    <Compile Remove="Services\VercelDeploymentClient.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="OrchardCore.Module.Targets" Version="3.0.1" />
     <PackageReference Include="OrchardCore.Navigation" Version="3.0.1" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.11" />
@@ -27,6 +32,10 @@
     <ProjectReference Include="..\AutonomiaSaaS.Modules.BusinessCore\AutonomiaSaaS.Modules.BusinessCore.csproj" />
     <ProjectReference Include="..\AutonomiaSaaS.Modules.CredentialVault\AutonomiaSaaS.Modules.CredentialVault.csproj" />
     <ProjectReference Include="..\AutonomiaSaaS.Modules.RiskGate\AutonomiaSaaS.Modules.RiskGate.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Abstractions\" />
   </ItemGroup>
 
 </Project>

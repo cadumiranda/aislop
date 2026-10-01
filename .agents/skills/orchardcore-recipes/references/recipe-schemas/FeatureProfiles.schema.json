@@ -1,0 +1,55 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "const": "FeatureProfiles",
+      "description": "Recipe step discriminator. Must be \u0027FeatureProfiles\u0027."
+    },
+    "FeatureProfiles": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "Id": {
+            "type": "string",
+            "description": "Optional unique identifier for the feature profile."
+          },
+          "Name": {
+            "type": "string",
+            "description": "Display name of the feature profile."
+          },
+          "FeatureRules": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "Rule": {
+                  "type": "string",
+                  "description": "Feature rule type identifier."
+                },
+                "Expression": {
+                  "type": "string",
+                  "description": "Expression evaluated by the rule."
+                }
+              },
+              "required": [
+                "Rule",
+                "Expression"
+              ],
+              "additionalProperties": true
+            },
+            "description": "Rules that determine which features belong to the profile."
+          }
+        },
+        "additionalProperties": true
+      },
+      "description": "Dictionary of tenant feature profiles keyed by their technical name."
+    }
+  },
+  "required": [
+    "name",
+    "FeatureProfiles"
+  ],
+  "additionalProperties": true
+}

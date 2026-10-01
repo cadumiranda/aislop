@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "const": "MicrosoftAccountSettings",
+      "description": "Recipe step discriminator. Must be \u0027MicrosoftAccountSettings\u0027."
+    },
+    "AppId": {
+      "type": "string",
+      "description": "Microsoft application (client) ID."
+    },
+    "AppSecret": {
+      "type": "string",
+      "description": "Microsoft application client secret."
+    },
+    "CallbackPath": {
+      "type": "string",
+      "description": "Relative callback path that Microsoft redirects back to after sign-in."
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "additionalProperties": true
+}

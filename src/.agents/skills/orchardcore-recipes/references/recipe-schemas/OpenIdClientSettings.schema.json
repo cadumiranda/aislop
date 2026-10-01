@@ -1,0 +1,93 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "const": "OpenIdClientSettings",
+      "description": "Recipe step discriminator. Must be \u0027OpenIdClientSettings\u0027."
+    },
+    "DisplayName": {
+      "type": "string",
+      "description": "Display caption shown for the OpenID client login option."
+    },
+    "Authority": {
+      "type": "string",
+      "description": "Authority or issuer base URL of the external OpenID provider."
+    },
+    "ClientId": {
+      "type": "string",
+      "description": "Registered OpenID client identifier."
+    },
+    "ClientSecret": {
+      "type": "string",
+      "description": "Registered OpenID client secret."
+    },
+    "CallbackPath": {
+      "type": "string",
+      "description": "Relative callback path that the provider redirects back to after sign-in."
+    },
+    "SignedOutRedirectUri": {
+      "type": "string",
+      "description": "Absolute URI the provider should redirect to after sign-out completes."
+    },
+    "SignedOutCallbackPath": {
+      "type": "string",
+      "description": "Relative callback path that handles the post-logout response from the provider."
+    },
+    "Scopes": {
+      "type": "string",
+      "description": "Space-separated list of scopes requested from the provider."
+    },
+    "ResponseType": {
+      "type": "string",
+      "enum": [
+        "code",
+        "code id_token",
+        "code id_token token",
+        "code token",
+        "id_token",
+        "id_token token"
+      ],
+      "description": "OpenID Connect response type sent to the provider."
+    },
+    "ResponseMode": {
+      "type": "string",
+      "enum": [
+        "form_post",
+        "fragment",
+        "query"
+      ],
+      "description": "How the provider should return the response payload."
+    },
+    "StoreExternalTokens": {
+      "type": "boolean",
+      "description": "Whether external access and refresh tokens should be stored for later use."
+    },
+    "Parameters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "description": "Additional protocol parameter name."
+          },
+          "Value": {
+            "type": "string",
+            "description": "Additional protocol parameter value."
+          }
+        },
+        "required": [
+          "Name",
+          "Value"
+        ],
+        "additionalProperties": true,
+        "description": "Additional protocol parameters appended to the authentication request."
+      }
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "additionalProperties": true
+}

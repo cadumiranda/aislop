@@ -11,27 +11,51 @@ internal sealed class FakeDeploymentClient : IDeploymentClient
     public bool RollbackCalled { get; private set; }
     public string? LastRollbackDeploymentId { get; private set; }
 
-    public Task<DeploymentResult> DeployToStagingAsync(string html, CancellationToken cancellationToken = default)
-        => Task.FromResult(new DeploymentResult("staging_dep_1", "https://staging.example.com", DeploymentStatus.Healthy));
+    public Task<DeploymentResult> DeployToStagingAsync(DeploymentRequest request, CancellationToken cancellationToken = default)
+        => Task.FromResult(new DeploymentResult
+        {
+            DeploymentId = "staging_dep_1",
+            Url = "https://staging.example.com",
+            ReadyState = DeploymentReadyState.Ready,
+            Status = DeploymentStatus.Healthy,
+        });
 
-    public Task<DeploymentStatus> CheckDeploymentAsync(string deploymentId, CancellationToken cancellationToken = default)
-        => Task.FromResult(StagingHealthAfterDeploy);
+    public Task<DeploymentHealthResult> CheckDeploymentAsync(string deploymentId, CancellationToken cancellationToken = default)
+        => Task.FromResult(new DeploymentHealthResult
+        {
+            IsHealthy = StagingHealthAfterDeploy == DeploymentStatus.Healthy,
+            ReadyState = DeploymentReadyState.Ready,
+            Url = "https://staging.example.com",
+            TimedOut = false,
+            ErrorDetail = null,
+        });
 
-    public Task<DeploymentResult> PromoteToProductionAsync(string stagingDeploymentId, CancellationToken cancellationToken = default)
+    public Task<DeploymentResult> PromoteToProductionAsync(string projectId, string stagingDeploymentId, CancellationToken cancellationToken = default)
     {
         if (ThrowOnPromote)
         {
             throw new InvalidOperationException("Falha simulada na promoção para produção.");
         }
 
-        return Task.FromResult(new DeploymentResult(
-            "prod_dep_1", "https://producao.example.com", ProductionHealthAfterPromote));
+        return Task.FromResult(new DeploymentResult
+        {
+            DeploymentId = "prod_dep_1",
+            Url = "https://producao.example.com",
+            ReadyState = DeploymentReadyState.Ready,
+            Status = ProductionHealthAfterPromote,
+        });
     }
 
-    public Task<DeploymentResult> RollbackToPreviousAsync(string previousDeploymentId, CancellationToken cancellationToken = default)
+    public Task<DeploymentResult> RollbackToPreviousAsync(string projectId, string previousDeploymentId, CancellationToken cancellationToken = default)
     {
         RollbackCalled = true;
         LastRollbackDeploymentId = previousDeploymentId;
-        return Task.FromResult(new DeploymentResult(previousDeploymentId, "https://staging.example.com", DeploymentStatus.Healthy));
+        return Task.FromResult(new DeploymentResult
+        {
+            DeploymentId = previousDeploymentId,
+            Url = "https://staging.example.com",
+            ReadyState = DeploymentReadyState.Ready,
+            Status = DeploymentStatus.Healthy,
+        });
     }
 }

@@ -30,7 +30,7 @@ public sealed class Startup : StartupBase
             return options;
         });
 
-        services.AddSingleton<ILogger<DockerSandboxRunner>, ILogger<DockerSandboxRunner>>();
+        services.AddSingleton<ILogger<DockerSandboxRunner>, Logger<DockerSandboxRunner>>();
         services.AddSingleton<IProcessInvoker, ProcessInvoker>();
         services.AddSingleton<ISandboxRunner, DockerSandboxRunner>();
         services.AddSingleton<ISandboxExecutionQueue, InMemorySandboxExecutionQueue>();

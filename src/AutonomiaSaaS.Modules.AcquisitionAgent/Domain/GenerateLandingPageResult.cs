@@ -16,13 +16,3 @@ public sealed record GenerateLandingPageResult(
     string? StagingDeploymentId,
     long? ProductionApprovalTaskId
 );
-
-/// <summary>
-/// Resultado de PromoteToProductionAsync, chamado depois que um humano
-/// aprova a AgentTask de deploy em produção (seção 8 da especificação
-/// técnica: botão "Aprovar" no painel de aprovação).
-/// </summary>
-public sealed record PromoteToProductionResult(
-    AgentTaskStatus FinalStatus,
-    string? ProductionUrl
-);

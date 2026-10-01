@@ -86,8 +86,10 @@ public sealed class AcquisitionAgentOrchestrator : IAcquisitionAgentOrchestrator
             cancellationToken).ConfigureAwait(false);
 
         // Passo 4 (seção 5): DeployStagingTask.
+        var request = new DeploymentRequest(){ DeploymentName= plan.Headline , ProjectId = plan.Html, Files = null};
+
         var stagingDeployment = await _deploymentClient
-            .DeployToStagingAsync(plan.Html, cancellationToken)
+            .DeployToStagingAsync(request, cancellationToken)
             .ConfigureAwait(false);
 
         // Passo 5 (seção 5): CheckDeployTask.
@@ -95,7 +97,7 @@ public sealed class AcquisitionAgentOrchestrator : IAcquisitionAgentOrchestrator
             .CheckDeploymentAsync(stagingDeployment.DeploymentId, cancellationToken)
             .ConfigureAwait(false);
 
-        if (stagingHealth != DeploymentStatus.Healthy)
+        if (!stagingHealth.IsHealthy)
         {
             // Deploy em staging falhou — reverte a tarefa de baixo risco e
             // NÃO propõe a tarefa de produção. Promover para produção algo
@@ -172,7 +174,7 @@ public sealed class AcquisitionAgentOrchestrator : IAcquisitionAgentOrchestrator
         try
         {
             productionDeployment = await _deploymentClient
-                .PromoteToProductionAsync(stagingDeploymentId, cancellationToken)
+                .PromoteToProductionAsync(task.AgentName, stagingDeploymentId, cancellationToken)
                 .ConfigureAwait(false);
         }
         catch
@@ -182,7 +184,7 @@ public sealed class AcquisitionAgentOrchestrator : IAcquisitionAgentOrchestrator
             // o deployment anterior conhecido em vez de deixar produção num
             // estado indefinido, e marca a tarefa como Revertida, não como
             // uma falha silenciosa.
-            await _deploymentClient.RollbackToPreviousAsync(stagingDeploymentId, cancellationToken)
+            await _deploymentClient.RollbackToPreviousAsync(task.AgentName, stagingDeploymentId, cancellationToken)
                 .ConfigureAwait(false);
             await _agentTaskStore.TransitionAsync(productionTaskId, AgentTaskStatus.Revertida, cancellationToken)
                 .ConfigureAwait(false);
@@ -192,7 +194,7 @@ public sealed class AcquisitionAgentOrchestrator : IAcquisitionAgentOrchestrator
 
         if (productionDeployment.Status != DeploymentStatus.Healthy)
         {
-            await _deploymentClient.RollbackToPreviousAsync(stagingDeploymentId, cancellationToken)
+            await _deploymentClient.RollbackToPreviousAsync(task.AgentName, stagingDeploymentId, cancellationToken)
                 .ConfigureAwait(false);
             await _agentTaskStore.TransitionAsync(productionTaskId, AgentTaskStatus.Revertida, cancellationToken)
                 .ConfigureAwait(false);

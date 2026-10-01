@@ -1,7 +1,7 @@
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
-    Name = "AutonomiaSaaS Sandbox",
+    Name = "Autonomia SaaS - Sandbox",
     Author = "Carlos Eduardo Miranda",
     Website = "https://autonomiasaas.example",
     Version = "0.1.0",

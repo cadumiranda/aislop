@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using AutonomiaSaaS.Modules.AcquisitionAgent.Domain;
 
 namespace AutonomiaSaaS.Modules.AcquisitionAgent.Services;
@@ -15,7 +12,8 @@ public sealed class FakeDeploymentClient : IDeploymentClient
     public bool ShouldFailCheck { get; set; }
     public bool ShouldFailProduction { get; set; }
 
-    public Task<DeploymentResult> DeployToStagingAsync(string html, CancellationToken cancellationToken = default)
+
+    public Task<DeploymentResult> DeployToStagingAsync(DeploymentRequest request, CancellationToken cancellationToken = default)
     {
         if (ShouldFailStaging)
         {
@@ -23,21 +21,23 @@ public sealed class FakeDeploymentClient : IDeploymentClient
         }
 
         var id = $"staging-{Guid.NewGuid():N}";
-        var result = new DeploymentResult(id, $"https://staging.example.com/{id}", DeploymentStatus.Healthy);
+        var result = new DeploymentResult() { DeploymentId = id, Url = $"https://staging.example.com/{id}", Status = DeploymentStatus.Healthy, ReadyState = DeploymentReadyState.Ready };
         return Task.FromResult(result);
     }
 
-    public Task<DeploymentStatus> CheckDeploymentAsync(string deploymentId, CancellationToken cancellationToken = default)
+    public Task<DeploymentHealthResult> CheckDeploymentAsync(string deploymentId, CancellationToken cancellationToken)
     {
         if (ShouldFailCheck)
         {
-            return Task.FromResult(DeploymentStatus.Unhealthy);
+            var result = new DeploymentHealthResult() { IsHealthy = false, ReadyState = DeploymentReadyState.Error, Url = $"https://staging.example.com/{deploymentId}", TimedOut = false, ErrorDetail = "Falha simulada na verificação de saúde do deployment." };
+            return Task.FromResult(result);
         }
 
-        return Task.FromResult(DeploymentStatus.Healthy);
+        var resultOK = new DeploymentHealthResult() { IsHealthy = true, ReadyState = DeploymentReadyState.Ready, Url = $"https://staging.example.com/{deploymentId}", TimedOut = false, ErrorDetail = null };
+        return Task.FromResult(resultOK);
     }
 
-    public Task<DeploymentResult> PromoteToProductionAsync(string stagingDeploymentId, CancellationToken cancellationToken = default)
+    public Task<DeploymentResult> PromoteToProductionAsync(string projectId, string stagingDeploymentId, CancellationToken cancellationToken = default)
     {
         if (ShouldFailProduction)
         {
@@ -45,13 +45,23 @@ public sealed class FakeDeploymentClient : IDeploymentClient
         }
 
         var id = $"prod-{Guid.NewGuid():N}";
-        var result = new DeploymentResult(id, $"https://app.example.com/{id}", DeploymentStatus.Healthy);
+        var result = new DeploymentResult() { DeploymentId = id, Url = $"https://app.example.com/{id}", Status = DeploymentStatus.Healthy, ReadyState = DeploymentReadyState.Ready };
         return Task.FromResult(result);
     }
 
-    public Task<DeploymentResult> RollbackToPreviousAsync(string previousDeploymentId, CancellationToken cancellationToken = default)
+    public Task<DeploymentResult> RollbackToPreviousAsync(string projectId, string previousProductionDeploymentId, CancellationToken cancellationToken = default)
     {
-        var result = new DeploymentResult(previousDeploymentId, $"https://app.example.com/rollback-{previousDeploymentId}", DeploymentStatus.Healthy);
+        var result = new DeploymentResult() { DeploymentId = previousProductionDeploymentId, Url = $"https://app.example.com/rollback-{previousProductionDeploymentId}", Status = DeploymentStatus.Healthy, ReadyState = DeploymentReadyState.Ready };
         return Task.FromResult(result);
+    }
+
+    Task<DeploymentResult> IDeploymentClient.PromoteToProductionAsync(string projectId, string stagingDeploymentId, CancellationToken cancellationToken)
+    {
+        return PromoteToProductionAsync(projectId, stagingDeploymentId, cancellationToken);
+    }
+
+    Task<DeploymentResult> IDeploymentClient.RollbackToPreviousAsync(string projectId, string previousProductionDeploymentId, CancellationToken cancellationToken)
+    {
+        return RollbackToPreviousAsync(projectId, previousProductionDeploymentId, cancellationToken);
     }
 }

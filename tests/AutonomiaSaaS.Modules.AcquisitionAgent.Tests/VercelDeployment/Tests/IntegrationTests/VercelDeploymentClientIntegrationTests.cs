@@ -1,4 +1,4 @@
-using AutonomiaSaaS.Modules.AcquisitionAgent.Abstractions;
+using AutonomiaSaaS.Modules.AcquisitionAgent.Domain;
 using AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment.Configuration;
 using AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment.Http;
 using Microsoft.Extensions.Logging.Abstractions;

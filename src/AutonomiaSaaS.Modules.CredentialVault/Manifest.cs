@@ -1,7 +1,7 @@
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
-    Name = "AutonomiaSaaS Credential Vault",
+    Name = "Autonomia SaaS - Credential Vault",
     Author = "Carlos Eduardo Miranda",
     Website = "https://autonomiasaas.example",
     Version = "0.1.0",

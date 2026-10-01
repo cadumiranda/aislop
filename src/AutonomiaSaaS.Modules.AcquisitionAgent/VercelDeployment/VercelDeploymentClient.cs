@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
-using AutonomiaSaaS.Modules.AcquisitionAgent.Abstractions;
+using AutonomiaSaaS.Modules.AcquisitionAgent.Domain;
+using AutonomiaSaaS.Modules.AcquisitionAgent.Services;
 using AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment.Configuration;
 using AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment.Http;
 using Microsoft.Extensions.Logging;
@@ -51,6 +52,7 @@ public sealed class VercelDeploymentClient : IDeploymentClient
             DeploymentId = payload.Id,
             Url = payload.Url,
             ReadyState = ParseReadyState(payload.ReadyState),
+            Status = DeploymentStatus.Healthy,
         };
     }
 
@@ -100,7 +102,7 @@ public sealed class VercelDeploymentClient : IDeploymentClient
         }
     }
 
-    public async Task PromoteToProductionAsync(
+    public async Task<DeploymentResult> PromoteToProductionAsync(
         string projectId, string stagingDeploymentId, CancellationToken cancellationToken = default)
     {
         var url = BuildUrl($"/v10/projects/{Uri.EscapeDataString(projectId)}/promote/{Uri.EscapeDataString(stagingDeploymentId)}");
@@ -110,9 +112,20 @@ public sealed class VercelDeploymentClient : IDeploymentClient
 
         using var response = await _httpClient.PostAsync(url, content: null, cancellationToken);
         await ThrowIfUnsuccessfulAsync(response, "promover deployment para produção", cancellationToken);
+
+        var payload = await response.Content.ReadFromJsonAsync<DeploymentResponseBody>(cancellationToken)
+            ?? throw new InvalidOperationException("Resposta vazia da Vercel ao promover para produção.");
+
+        return new DeploymentResult
+        {
+            DeploymentId = payload.Id,
+            Url = payload.Url,
+            ReadyState = ParseReadyState(payload.ReadyState),
+            Status = DeploymentStatus.Healthy,
+        };
     }
 
-    public async Task RollbackToPreviousAsync(
+    public async Task<DeploymentResult> RollbackToPreviousAsync(
         string projectId, string previousProductionDeploymentId, CancellationToken cancellationToken = default)
     {
         var url = BuildUrl($"/v1/projects/{Uri.EscapeDataString(projectId)}/rollback/{Uri.EscapeDataString(previousProductionDeploymentId)}");
@@ -122,6 +135,17 @@ public sealed class VercelDeploymentClient : IDeploymentClient
 
         using var response = await _httpClient.PostAsync(url, content: null, cancellationToken);
         await ThrowIfUnsuccessfulAsync(response, "reverter deployment de produção", cancellationToken);
+
+        var payload = await response.Content.ReadFromJsonAsync<DeploymentResponseBody>(cancellationToken)
+            ?? throw new InvalidOperationException("Resposta vazia da Vercel ao reverter produção.");
+
+        return new DeploymentResult
+        {
+            DeploymentId = payload.Id,
+            Url = payload.Url,
+            ReadyState = ParseReadyState(payload.ReadyState),
+            Status = DeploymentStatus.Healthy,
+        };
     }
 
     private string BuildUrl(string path)

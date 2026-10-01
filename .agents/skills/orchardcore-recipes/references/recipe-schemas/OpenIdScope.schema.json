@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "const": "OpenIdScope",
+      "description": "Recipe step discriminator. Must be \u0027OpenIdScope\u0027."
+    },
+    "Description": {
+      "type": "string",
+      "description": "Human-readable explanation of what this scope grants."
+    },
+    "DisplayName": {
+      "type": "string",
+      "description": "Display caption shown for the scope."
+    },
+    "ScopeName": {
+      "type": "string",
+      "description": "Unique scope name exposed by the OpenID server."
+    },
+    "Resources": {
+      "type": "string",
+      "description": "Space-separated resource names associated with this scope."
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "additionalProperties": true
+}

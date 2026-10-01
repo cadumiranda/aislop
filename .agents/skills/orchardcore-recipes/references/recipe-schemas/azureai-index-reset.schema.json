@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "const": "azureai-index-reset",
+      "description": "Recipe step discriminator. Must be \u0027azureai-index-reset\u0027."
+    },
+    "IncludeAll": {
+      "type": "boolean",
+      "description": "When true, reset all Azure AI Search indexes and ignore the Indices list."
+    },
+    "Indices": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Specific Azure AI Search index names to reset when IncludeAll is false."
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "additionalProperties": true
+}
