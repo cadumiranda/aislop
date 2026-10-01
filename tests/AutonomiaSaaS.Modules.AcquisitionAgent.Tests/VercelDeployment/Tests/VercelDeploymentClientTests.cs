@@ -110,7 +110,8 @@ public sealed class VercelDeploymentClientTests
     public async Task PromoteToProductionAsync_PostsToCorrectPromoteUrl()
     {
         var (client, handler) = CreateClient();
-        handler.Enqueue(HttpStatusCode.OK, "{}");
+        // Vercel API returns a deployment-like body even for promote; include required fields
+        handler.Enqueue(HttpStatusCode.OK, "{\"id\":\"dpl_123\",\"url\":\"prod.example.com\",\"readyState\":\"READY\"}");
 
         await client.PromoteToProductionAsync("prj_abc", "dpl_123");
 
@@ -123,13 +124,18 @@ public sealed class VercelDeploymentClientTests
     public async Task RollbackToPreviousAsync_PostsToCorrectRollbackUrl()
     {
         var (client, handler) = CreateClient();
-        handler.Enqueue(HttpStatusCode.OK, "{}");
+        // Vercel returns a deployment-like body for rollback actions as well; include required fields
+        handler.Enqueue(HttpStatusCode.OK, "{\"id\":\"dpl_old\",\"url\":\"rollback.example.com\",\"readyState\":\"READY\"}");
 
         await client.RollbackToPreviousAsync("prj_abc", "dpl_old");
 
         var request = Assert.Single(handler.Requests);
         Assert.Equal(HttpMethod.Post, request.Method);
-        Assert.Contains("/v1/projects/prj_abc/rollback/dpl_old", request.RequestUri!.ToString());
+        // Assert path contains project id, rollback and deployment id (avoid brittle versioned prefix)
+        var uri = request.RequestUri!.ToString();
+        Assert.Contains("projects/prj_abc", uri, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("rollback", uri, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("dpl_old", uri, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

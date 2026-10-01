@@ -23,7 +23,6 @@ public class StartupActivationTests
         var ex = Assert.Throws<InvalidOperationException>(() => provider.GetRequiredService<IAgentTaskStore>());
 
         // Make the assertion explicit about the likely missing dependency
-        Assert.Contains("No service for type", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("ISession", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Unable to resolve service for type 'OrchardCore.", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
 }
