@@ -33,32 +33,14 @@ public sealed class Startup : StartupBase
 
         services.AddTransient<VercelAuthenticationHandler>();
 
-        //if (_hostEnvironment.IsDevelopment())
-        //{
-        //    services.AddScoped<IDeploymentClient, FakeDeploymentClient>(); // já existe (spec 9.1)
-        //}
-        //else
-        //{
-        //    services.AddHttpClient<IDeploymentClient, VercelDeploymentClient>()
-        //        .AddHttpMessageHandler<VercelAuthenticationHandler>();
-        //}
-
-
-        var vercelToken = _configuration["Vercel:ApiToken"];
-        var useFake = _configuration.GetValue<bool>("Vercel:UseFake", defaultValue: true);
-
-        if (!useFake && !string.IsNullOrEmpty(vercelToken))
+        if (!vercelOptions.UseFake && !string.IsNullOrEmpty(vercelOptions.ApiToken))
         {
-            services.AddHttpClient<IDeploymentClient, VercelDeploymentClient>(httpClient =>
-            {
-                httpClient.BaseAddress = new Uri("https://api.vercel.com");
-                httpClient.DefaultRequestHeaders.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", vercelToken);
-            });
+            services.AddHttpClient<IDeploymentClient, VercelDeploymentClient>()
+                .AddHttpMessageHandler<VercelAuthenticationHandler>();
         }
         else
         {
-            services.AddSingleton<IDeploymentClient, FakeDeploymentClient>();
+            services.AddScoped<IDeploymentClient, FakeDeploymentClient>(); // já existe (spec 9.1)
         }
 
         services.AddScoped<IModularTenantEvents, MyStartupTaskService>();

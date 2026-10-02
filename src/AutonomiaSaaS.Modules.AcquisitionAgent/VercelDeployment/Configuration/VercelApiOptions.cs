@@ -5,7 +5,10 @@ namespace AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment.Configuration;
 [Feature("AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment")]
 public sealed class VercelApiOptions
 {
+    public bool UseFake { get; set; } = true;
     public string BaseUrl { get; set; } = "https://api.vercel.com";
+    public string ApiToken { get; set; } = "https://api.vercel.com";
+
 
     /// <summary>Opcional — só necessário se o projeto pertencer a um Team, não a uma conta pessoal.</summary>
     public string? TeamId { get; set; }

@@ -1,7 +1,9 @@
 using AutonomiaSaaS.Modules.AcquisitionAgent;
 using AutonomiaSaaS.Modules.AcquisitionAgent.Services;
 using AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment;
+using AutonomiaSaaS.Modules.AcquisitionAgent.VercelDeployment.Tests;
 using AutonomiaSaaS.Modules.BusinessCore.Services;
+using AutonomiaSaaS.Modules.CredentialVault.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -69,6 +71,9 @@ public class StartupTests
     {
         // Arrange
         var serviceCollection = new ServiceCollection();
+        serviceCollection.AddScoped<IDeploymentClient, VercelDeploymentClient>();
+        serviceCollection.AddScoped<ICredentialVault, FakeCredentialVaultForVercelTests>();
+
         var inMemorySettings = new Dictionary<string, string?>
         {
             { "Vercel:UseFake", "false" },
