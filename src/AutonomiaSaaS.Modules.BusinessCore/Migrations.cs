@@ -36,6 +36,14 @@ public sealed class Migrations : DataMigration
             .Listable(true)     // aparece no painel de aprovação
             .Draftable(false)); // uma AgentTask não tem estado de rascunho, só os estados da seção 6
 
+        // SchemaBuilder depende do host OrchardCore/YesSql para operar corretamente.
+        // Para evitar hangs indefinidos em cenários de teste sem infra, verifique se
+        // SchemaBuilder está disponível antes de invocar métodos async que acessam o DB.
+        if (SchemaBuilder == null)
+        {
+            throw new InvalidOperationException("SchemaBuilder não disponível: assegure que OrchardCore.Data/YesSql está configurado no host antes de ativar o módulo BusinessCore.");
+        }
+
         await SchemaBuilder.CreateMapIndexTableAsync(typeof(AgentTaskPartIndex), table => table
             .Column<string>("ContentItemId", column => column.WithLength(26))
             .Column<string>("AgentName", column => column.WithLength(64))
