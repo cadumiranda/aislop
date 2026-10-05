@@ -3,9 +3,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Module(
     Name = "Autonomia SaaS - Credential Vault",
     Author = "Carlos Eduardo Miranda",
-    Website = "https://autonomiasaas.example",
-    Version = "0.1.0",
     Description = "Cofre de credenciais por agente, usando Data Protection e YesSql nativos do Orchard Core.",
     Category = "Autonomia SaaS",
-    Dependencies = new[] { "OrchardCore.Admin", "OrchardCore.AuditTrail", "OrchardCore.Navigation", "OrchardCore.Security" }
+    Dependencies = new[] { "OrchardCore.Admin", "OrchardCore.AuditTrail", "OrchardCore.Data", "OrchardCore.Navigation", "OrchardCore.Security" }
 )]

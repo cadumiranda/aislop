@@ -18,6 +18,7 @@
 
         // --- Recursos nativos do Orchard Core que a solução depende ---
         "OrchardCore.Admin",
+        "OrchardCore.Data",
         "OrchardCore.BackgroundTasks",
         "OrchardCore.Contents",
         "OrchardCore.Diagnostics",
